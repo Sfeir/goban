@@ -86,7 +86,7 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
     var self = this;
     $(".cell").click(function (event) {
         var id = event.target.id;
-        self.board.addStone(id.charAt(0), id.charAt(1), self.getColor());
+        self.board.addStone({x:id.charAt(0), y:id.charAt(1), color:self.getColor()});
     });
 };
 
@@ -100,18 +100,18 @@ Game.Controller.prototype.watchForNewStones = function () {
     boardRef.on('child_changed', function (snapshot) {
         var coord = snapshot.key();
         var stone = snapshot.val();
-        self.board.addStone(parseInt(coord.charAt(0)), parseInt(coord.charAt(1)), stone);
+        self.board.addStone({x:parseInt(coord.charAt(0)), y:parseInt(coord.charAt(1)), color:stone});
     });
 
     boardRef.on('child_added', function (snapshot) {
         var coord = snapshot.key();
         var stone = snapshot.val();
-        self.board.addStone(parseInt(coord.charAt(0)), parseInt(coord.charAt(1)), stone);
+        self.board.addStone({x:parseInt(coord.charAt(0)), y:parseInt(coord.charAt(1)), color:stone});
     });
 
     boardRef.on('child_removed', function (snapshot) {
         var coord = snapshot.key();
-        self.board.removeStone(coord.charAt(0), coord.charAt(1));
+        self.board.removeStone({x:coord.charAt(0), y:coord.charAt(1)});
     });
 };
 

@@ -15,13 +15,10 @@ Fb.prototype.getRef = function () {
 };
 
 Fb.prototype.setStone = function (x, y, color) {
-    if (!_.isEqual(color, Game.color.BLACK) && !_.isEqual(color, Game.color.WHITE)) {
-        return false;
-    }
-
     return this.getRef().child('board/' + x + "" + y).set(color);
 };
 
 Fb.prototype.resetBoard = function () {
     this.getRef().child('board').remove();
 };
+

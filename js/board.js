@@ -12,37 +12,37 @@ Board.prototype.resetStones = function () {
     this.generateGoban();
 };
 
-Board.prototype.get = function (x, y) {
+Board.prototype.get = function (coord) {
     var _ref;
-    return (_ref = this.stones[x]) != null ? _ref[y] : void 0;
+    return (_ref = this.stones[coord.x]) != null ? _ref[coord.y] : void 0;
 };
 
-Board.prototype.addStone = function (x, y, color) {
-    if (!this.isCoordOnGoban(x, y)) {
+Board.prototype.addStone = function (coord) {
+    if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
         this.error = "Outside goban";
         return false;
     }
 
-    var d = document.getElementById(x + "" + y);
-    d.className = d.className.replace(" stone", "")
+    var d = document.getElementById(coord.x + "" + coord.y);
+    d.className = d.className.replace("stone", "")
         .replace(Game.color.BLACK.toLowerCase(), "")
         .replace(Game.color.WHITE.toLowerCase(), "");
-    d.className = d.className + " stone " + color.toLowerCase() + " ";
+    d.className = d.className + " stone " + coord.color.toLowerCase() + " ";
 
-    this.stones[x][y] = color;
+    this.stones[coord.x][coord.y] = coord.color;
 
-    return this.refFirebase.setStone(x, y, color);
+    return this.refFirebase.setStone(coord.x, coord.y, coord.color);
 };
 
-Board.prototype.removeStone = function (x, y) {
-    if (!this.isCoordOnGoban(x, y)) {
+Board.prototype.removeStone = function (coord) {
+    if (!this.isCoordOnGoban(coord.x, coord.y)) {
         this.error = "Outside goban";
         return false;
     }
 
-    if (typeof this.stones[x] != "undefined" && typeof this.stones[x][y] != "undefined") {
-        delete this.stones[x][y];
-        var d = document.getElementById(x + "" + y);
+    if (typeof this.stones[coord.x] != "undefined" && typeof this.stones[coord.x][coord.y] != "undefined") {
+        delete this.stones[coord.x][coord.y];
+        var d = document.getElementById(coord.x + "" + coord.y);
         d.className = d.className.replace(" stone", "")
             .replace(Game.color.BLACK.toLowerCase(), "")
             .replace(Game.color.WHITE.toLowerCase(), "");
@@ -53,9 +53,13 @@ Board.prototype.init = function (goban) {
     this.stones = goban;
 };
 
-Board.prototype.isCoordOnGoban = function (x, y) {
-    return (0 <= x && x < this.size)
-        && (0 <= y && y < this.size);
+Board.prototype.isCoordOnGoban = function (coord) {
+    return (0 <= coord.x && coord.x < this.size)
+        && (0 <= coord.y && coord.y < this.size);
+};
+
+Board.prototype.isColorValid = function (color) {
+    return (_.isEqual(color, Game.color.BLACK) || _.isEqual(color, Game.color.WHITE));
 };
 
 Board.prototype.generateGoban = function () {
