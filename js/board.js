@@ -19,7 +19,11 @@ Board.prototype.get = function (coord) {
 
 Board.prototype.addStone = function (coord) {
     if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
-        this.error = "Outside goban";
+        new PNotify({
+            title: 'Oh No!',
+            text: 'Outside goban',
+            type: 'error'
+        });
         return false;
     }
 
@@ -36,7 +40,11 @@ Board.prototype.addStone = function (coord) {
 
 Board.prototype.removeStone = function (coord) {
     if (!this.isCoordOnGoban(coord.x, coord.y)) {
-        this.error = "Outside goban";
+        new PNotify({
+            title: 'Oh No!',
+            text: 'Outside goban',
+            type: 'error'
+        });
         return false;
     }
 
