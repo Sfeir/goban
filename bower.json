@@ -1,0 +1,21 @@
+{
+  "name": "goban",
+  "version": "0.0.0",
+  "authors": [
+    "ctesniere"
+  ],
+  "description": "Goban with FireBase",
+  "main": "index.html",
+  "keywords": [
+    "goban",
+    "firebase"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
