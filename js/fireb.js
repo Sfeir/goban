@@ -1,9 +1,17 @@
-var Fb = function (url) {
+var Fb = function (url, idGame) {
     this.ref = new Firebase(url);
+    this.idGame = idGame;
 };
 
 Fb.prototype.getRef = function () {
-    return this.ref;
+    if (_.isEmpty(this.idGame)) {
+        var push = this.ref.push();
+        this.idGame = push.key();
+        $(location).attr('href', "/?" + this.idGame);
+        return push;
+    } else {
+        return this.ref.child('/' + this.idGame + '/');
+    }
 };
 
 Fb.prototype.setStone = function (x, y, color) {
@@ -11,9 +19,9 @@ Fb.prototype.setStone = function (x, y, color) {
         return false;
     }
 
-    return this.ref.child('board/' + x + "" + y).set(color);
+    return this.getRef().child('board/' + x + "" + y).set(color);
 };
 
 Fb.prototype.resetBoard = function () {
-    this.ref.child('board').remove();
+    this.getRef().child('board').remove();
 };

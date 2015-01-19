@@ -3,12 +3,16 @@ var Game = function () {
 
 Game.PlayingState = {Watching: 0, Joining: 1, Playing: 2};
 Game.color = {BLACK:"BLACK", WHITE: "WHITE"};
+
 Game.Controller = function (size, url) {
-    this.refFirebase = new Fb(url);
+    var idGame = window.location.search.substring(1);
+    this.refFirebase = new Fb(url, idGame);
+
     this.board = new Board(size, this.refFirebase);
 
     this.playingState = Game.PlayingState.Watching;
     this.playerNum = null;
+
     this.waitToJoin();
 };
 
