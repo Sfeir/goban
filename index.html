@@ -41,15 +41,15 @@
     </div>
 </div>
 
+
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/bower_components/firebase/firebase.js"></script>
+<script src="/bower_components/underscore/underscore-min.js"></script>
+<script src="/js/game.js"></script>
+<script src="/js/board.js"></script>
+<script src="/js/fireb.js"></script>
 <script>
-    $(document).ready(function () {
-        $("a").click(function (event) {
-            var id = event.target.id;
-            var target = document.getElementById(id);
-            target.className = target.className + " stone black";
-        });
-    });
+    new Game.Controller(9, 'https://goban.firebaseio.com/');
 </script>
 </body>
 </html>
