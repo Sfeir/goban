@@ -31,12 +31,14 @@ Game.Controller.prototype.waitToJoin = function () {
         if (onlineSnap.val() === null && self.playingState === Game.PlayingState.Watching) {
             self.tryToJoin(0);
         }
+        self.presence(0, onlineSnap.val());
     });
 
     this.refFirebase.getRef().child('player1/online').on('value', function(onlineSnap) {
         if (onlineSnap.val() === null && self.playingState === Game.PlayingState.Watching) {
             self.tryToJoin(1);
         }
+        self.presence(1, onlineSnap.val());
     });
 };
 
@@ -111,4 +113,16 @@ Game.Controller.prototype.watchForNewStones = function () {
         var coord = snapshot.key();
         self.board.removeStone(coord.charAt(0), coord.charAt(1));
     });
+};
+
+Game.Controller.prototype.presence = function (playerNum, user) {
+    if (_.isEqual(playerNum, this.playerNum)) {
+        return;
+    }
+
+    if (user) {
+        $("#presence").text("Opponent : ★ online");
+    } else {
+        $("#presence").text("Opponent : ☆ idle");
+    }
 };
