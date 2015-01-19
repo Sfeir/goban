@@ -1,0 +1,74 @@
+.goban {
+    text-align: center;
+}
+
+.goban .board {
+    display: inline-block;
+    font-size: 0;
+    padding: 12px;
+    position: relative;
+}
+
+.goban .board::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.goban .content,
+.goban .cell {
+    float: left;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 25px;
+    height: 25px;
+}
+
+.goban .cell {
+    background-image: url("/img/240px-go.svg.png");
+}
+
+.goban .cell.oeil {
+    background-image: url("/img/240px-go_-.svg.png");
+}
+
+.goban .cell.first_col {
+    background-image: url("/img/240px-go_l.svg.png");
+    clear: left;
+}
+
+.goban .cell.last_col {
+    background-image: url("/img/240px-go_r.svg.png");
+}
+
+.goban .cell.first_row {
+    background-image: url("/img/240px-go_u.svg.png");
+}
+
+.goban .cell.last_row {
+    background-image: url("/img/240px-go_d.svg.png");
+}
+
+.goban .cell.first_col.first_row {
+    background-image: url("/img/240px-go_ul.svg.png");
+}
+
+.goban .cell.first_col.last_row {
+    background-image: url("/img/240px-go_dl.svg.png");
+}
+
+.goban .cell.last_col.first_row {
+    background-image: url("/img/240px-go_ur.svg.png");
+}
+
+.goban .cell.last_col.last_row {
+    background-image: url("/img/240px-go_dr.svg.png");
+}
+
+.goban .stone.black {
+    background-image: url("/img/240px-go_b.svg.png");
+}
+
+.goban .stone.white {
+    background-image: url("/img/240px-go_w.svg.png");
+}

@@ -1,0 +1,55 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style/goban.css"/>
+</head>
+<body>
+<div class="goban">
+    <div class="board">
+        <script>
+	        var size = 9;
+            for (var row = 0; row < size; row++) {
+                for (var col = 0; col < size; col++) {
+                    var attrClass = [];
+                    if (col == 0) {
+                        attrClass.push("first_col");
+                    }
+                    if (col == size - 1) {
+                        attrClass.push("last_col");
+                    }
+                    if (row == 0) {
+                        attrClass.push("first_row");
+                    }
+                    if (row == size - 1) {
+                        attrClass.push("last_row");
+                    }
+                    if (row == 2 && col == 2) {
+                        attrClass.push("oeil");
+                    }
+                    if (row == 6 && col == 2) {
+                        attrClass.push("oeil");
+                    }
+                    if (row == 2 && col == 6) {
+                        attrClass.push("oeil");
+                    }
+                    if (row == 6 && col == 6) {
+                        attrClass.push("oeil");
+                    }
+                    document.write("<a><div id='" + row + col + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>");
+                }
+            }
+        </script>
+    </div>
+</div>
+
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("a").click(function (event) {
+            var id = event.target.id;
+            var target = document.getElementById(id);
+            target.className = target.className + " stone black";
+        });
+    });
+</script>
+</body>
+</html>
