@@ -1,43 +1,12 @@
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="style/goban.css"/>
 </head>
 <body>
-<div class="goban">
-    <div class="board">
-        <script>
-	        var size = 9;
-            for (var row = 0; row < size; row++) {
-                for (var col = 0; col < size; col++) {
-                    var attrClass = [];
-                    if (col == 0) {
-                        attrClass.push("first_col");
-                    }
-                    if (col == size - 1) {
-                        attrClass.push("last_col");
-                    }
-                    if (row == 0) {
-                        attrClass.push("first_row");
-                    }
-                    if (row == size - 1) {
-                        attrClass.push("last_row");
-                    }
-                    if (row == 2 && col == 2) {
-                        attrClass.push("oeil");
-                    }
-                    if (row == 6 && col == 2) {
-                        attrClass.push("oeil");
-                    }
-                    if (row == 2 && col == 6) {
-                        attrClass.push("oeil");
-                    }
-                    if (row == 6 && col == 6) {
-                        attrClass.push("oeil");
-                    }
-                    document.write("<a><div id='" + row + col + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>");
-                }
-            }
-        </script>
+<div class='goban'>
+    <div class='board'>
+        <div id="canvasGoban"></div>
     </div>
 </div>
 
