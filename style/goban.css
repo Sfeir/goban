@@ -24,6 +24,16 @@
     height: 25px;
 }
 
+.goban .action a {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.jumbotron {
+    text-align: center;
+    background-color: transparent;
+}
+
 .goban .cell {
     background-image: url("/img/240px-go.svg.png");
 }

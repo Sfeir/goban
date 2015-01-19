@@ -1,13 +1,32 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="style/goban.css"/>
 </head>
 <body>
-<div class='goban'>
-    <div class='board'>
-        <div id="canvasGoban"></div>
+<div class="container">
+    <div class="jumbotron">
+        <h1>Goban with Firebase</h1>
     </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class='goban'>
+                <div class='board'>
+                    <div class="action">
+                        <a class="btn btn btn-success" href="#" role="button">Restart</a>
+                        <a class="btn btn btn-success" href="#" role="button">Undo</a>
+                    </div>
+                    <div id="canvasGoban"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
+        </div>
+    </div>
+
 </div>
 
 
