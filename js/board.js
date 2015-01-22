@@ -27,6 +27,15 @@ Board.prototype.addStone = function (coord) {
         return false;
     }
 
+    if (this.stones[coord.x][coord.y] != undefined && this.stones[coord.x][coord.y] != coord.color) {
+        new PNotify({
+            title: 'Oh No!',
+            text: 'A stone already exists',
+            type: 'error'
+        });
+        return false;
+    }
+
     var d = document.getElementById(coord.x + "" + coord.y);
     d.className = d.className.replace("stone", "")
         .replace(Game.color.BLACK.toLowerCase(), "")
