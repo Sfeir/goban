@@ -40,6 +40,10 @@ Game.Controller.prototype.waitToJoin = function () {
         }
         self.presence(1, onlineSnap.val());
     });
+
+    if (self.playingState === Game.PlayingState.Watching) {
+        this.watchForNewStones();
+    }
 };
 
 Game.Controller.prototype.tryToJoin = function (playerNum) {
