@@ -18,6 +18,10 @@ Fb.prototype.setStone = function (x, y, color) {
     return this.getRef().child('board/' + x + "" + y).set(color);
 };
 
+Fb.prototype.removeStone = function (x, y) {
+    return this.getRef().child('board/' + x + "" + y).remove();
+};
+
 Fb.prototype.resetBoard = function () {
     this.getRef().child('board').remove();
 };

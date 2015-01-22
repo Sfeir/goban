@@ -17,11 +17,11 @@ Board.prototype.get = function (coord) {
     return (_ref = this.stones[coord.x]) != null ? _ref[coord.y] : void 0;
 };
 
-Board.prototype.addStone = function (coord) {
+Board.prototype.setStone = function (coord) {
     if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
         new PNotify({
             title: 'Oh No!',
-            text: 'Outside goban',
+            text: 'Outside goban or color invalid',
             type: 'error'
         });
         return false;
@@ -48,7 +48,7 @@ Board.prototype.addStone = function (coord) {
 };
 
 Board.prototype.removeStone = function (coord) {
-    if (!this.isCoordOnGoban(coord.x, coord.y)) {
+    if (!this.isCoordOnGoban(coord)) {
         new PNotify({
             title: 'Oh No!',
             text: 'Outside goban',
@@ -57,13 +57,18 @@ Board.prototype.removeStone = function (coord) {
         return false;
     }
 
-    if (typeof this.stones[coord.x] != "undefined" && typeof this.stones[coord.x][coord.y] != "undefined") {
-        delete this.stones[coord.x][coord.y];
-        var d = document.getElementById(coord.x + "" + coord.y);
-        d.className = d.className.replace(" stone", "")
-            .replace(Game.color.BLACK.toLowerCase(), "")
-            .replace(Game.color.WHITE.toLowerCase(), "");
+    if (typeof this.stones[coord.x] == "undefined" || typeof this.stones[coord.x][coord.y] == "undefined") {
+        return;
     }
+
+    delete this.stones[coord.x][coord.y];
+    var d = document.getElementById(coord.x + "" + coord.y);
+    d.className = d.className.replace(" stone", "")
+        .replace(Game.color.BLACK.toLowerCase(), "")
+        .replace(Game.color.WHITE.toLowerCase(), "");
+
+    this.refFirebase.removeStone(coord.x, coord.y);
+
 };
 
 Board.prototype.init = function (goban) {
