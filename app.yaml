@@ -1,0 +1,21 @@
+application: sfeir-goban
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: no
+
+
+handlers:
+- url: /
+  static_files: dist/index.html
+  upload: dist/index.html
+
+# begin any static files request from www folder
+
+- url: /
+  static_dir: dist
+
+- url: /(.*\.txt)
+  mime_type: text/plain
+  static_files: dist/\1
+  upload: dist/(.*\.txt)
