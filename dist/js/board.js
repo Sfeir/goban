@@ -21,8 +21,7 @@ Board.prototype.setStone = function (coord) {
     if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
         new PNotify({
             title: 'Oh No!',
-            text: 'Outside goban or color invalid',
-            type: 'error'
+            text: 'Outside goban or color invalid'
         });
         return false;
     }
@@ -30,8 +29,7 @@ Board.prototype.setStone = function (coord) {
     if (this.stones[coord.x][coord.y] != undefined && this.stones[coord.x][coord.y] != coord.color) {
         new PNotify({
             title: 'Oh No!',
-            text: 'A stone already exists',
-            type: 'error'
+            text: 'A stone already exists'
         });
         return false;
     }
@@ -51,8 +49,7 @@ Board.prototype.removeStone = function (coord) {
     if (!this.isCoordOnGoban(coord)) {
         new PNotify({
             title: 'Oh No!',
-            text: 'Outside goban',
-            type: 'error'
+            text: 'Outside goban'
         });
         return false;
     }

@@ -43,8 +43,14 @@
 <script src="./js/fireb.js"></script>
 <script>
     $(function(){
+        // Firebase
         new Game.Controller(9, 'https://goban.firebaseio.com/');
+
+        // Settings for PNotify
         PNotify.prototype.options.styling = "fontawesome";
+        PNotify.prototype.options.opacity = ".9";
+        PNotify.prototype.options.type = "error";
+        PNotify.prototype.options.delay = "4000";
     });
 </script>
 </body>
