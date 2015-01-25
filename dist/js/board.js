@@ -1,6 +1,6 @@
 var Board = function (size, refFirebase) {
     this.size = size;
-    this.refFirebase = refFirebase;
+    this.firebase = refFirebase;
     this.stones = [];
     this.resetStones();
 };
@@ -34,15 +34,10 @@ Board.prototype.setStone = function (coord) {
         return false;
     }
 
-    var d = document.getElementById(coord.x + "" + coord.y);
-    d.className = d.className.replace("stone", "")
-        .replace(Game.color.BLACK.toLowerCase(), "")
-        .replace(Game.color.WHITE.toLowerCase(), "");
-    d.className = d.className + " stone " + coord.color.toLowerCase() + " ";
-
+    this.setClassName(coord, coord.color.toLowerCase());
     this.stones[coord.x][coord.y] = coord.color;
 
-    return this.refFirebase.setStone(coord.x, coord.y, coord.color);
+    return this.firebase.setStone(coord.x, coord.y, coord.color);
 };
 
 Board.prototype.removeStone = function (coord) {
@@ -59,13 +54,8 @@ Board.prototype.removeStone = function (coord) {
     }
 
     delete this.stones[coord.x][coord.y];
-    var d = document.getElementById(coord.x + "" + coord.y);
-    d.className = d.className.replace(" stone", "")
-        .replace(Game.color.BLACK.toLowerCase(), "")
-        .replace(Game.color.WHITE.toLowerCase(), "");
-
-    this.refFirebase.removeStone(coord.x, coord.y);
-
+    this.setClassName(coord);
+    this.firebase.removeStone(coord.x, coord.y);
 };
 
 Board.prototype.init = function (goban) {
@@ -74,16 +64,41 @@ Board.prototype.init = function (goban) {
 
 Board.prototype.isCoordOnGoban = function (coord) {
     return (0 <= coord.x && coord.x < this.size)
-        && (0 <= coord.y && coord.y < this.size);
+        && (0 < coord.y && coord.y <= this.size);
 };
 
 Board.prototype.isColorValid = function (color) {
     return (_.isEqual(color, Game.color.BLACK) || _.isEqual(color, Game.color.WHITE));
 };
 
+Board.prototype.convertStringToInt = function(str) {
+    var start = "A".toUpperCase().charCodeAt(0);
+    return str.charCodeAt(0) - start;
+};
+
+Board.prototype.convertIntToString = function(int) {
+    var start = "A".toUpperCase().charCodeAt(0);
+    return String.fromCharCode(start + int);
+};
+
+Board.prototype.setClassName = function(coord, className) {
+    var d = document.getElementById(coord.x + "-" + coord.y);
+    d.className = d.className.replace(" stone", "")
+        .replace(Game.color.BLACK.toLowerCase(), "")
+        .replace(Game.color.WHITE.toLowerCase(), "");
+
+    if (_.isNull(d)) {
+        return false;
+    }
+
+    if (!_.isEmpty(className)) {
+        d.className = d.className + " stone " + coord.color.toLowerCase();
+    }
+};
+
 Board.prototype.generateGoban = function () {
     var r = document.getElementById('canvasGoban');
-    for (var row = 0; row < this.size; row++) {
+    for (var row = this.size; row > 0; row--) {
         for (var col = 0; col < this.size; col++) {
             var attrClass = [];
             if (col == 0) {
@@ -92,25 +107,25 @@ Board.prototype.generateGoban = function () {
             if (col == this.size - 1) {
                 attrClass.push("last_col");
             }
-            if (row == 0) {
+            if (row == this.size) {
                 attrClass.push("first_row");
             }
-            if (row == this.size - 1) {
+            if (row == 1) {
                 attrClass.push("last_row");
             }
-            if (row == 2 && col == 2) {
+            if (row == 3 && col == 2) {
                 attrClass.push("oeil");
             }
-            if (row == 6 && col == 2) {
+            if (row == 7 && col == 2) {
                 attrClass.push("oeil");
             }
-            if (row == 2 && col == 6) {
+            if (row == 3 && col == 6) {
                 attrClass.push("oeil");
             }
-            if (row == 6 && col == 6) {
+            if (row == 7 && col == 6) {
                 attrClass.push("oeil");
             }
-            r.innerHTML = r.innerHTML + "<a><div id='" + row + col + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
+            r.innerHTML = r.innerHTML + "<a><div id='" + col + "-" + row + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
         }
     }
 };

@@ -6,9 +6,9 @@ Game.color = {BLACK:"BLACK", WHITE: "WHITE"};
 
 Game.Controller = function (size, url) {
     var idGame = window.location.search.substring(1);
-    this.refFirebase = new Fb(url, idGame);
+    this.firebase = new FB(url, idGame);
 
-    this.board = new Board(size, this.refFirebase);
+    this.board = new Board(size, this.firebase);
 
     this.playingState = Game.PlayingState.Watching;
     this.playerNum = null;
@@ -27,34 +27,30 @@ Game.Controller.prototype.waitToJoin = function () {
     var self = this;
 
     // Listen on 'online' location for player0 and player1.
-    this.refFirebase.getRef().child('player0/online').on('value', function (onlineSnap) {
-        if (onlineSnap.val() === null && self.playingState === Game.PlayingState.Watching) {
-            self.tryToJoin(0);
-        }
-        self.presence(0, onlineSnap.val());
-    });
-
-    this.refFirebase.getRef().child('player1/online').on('value', function(onlineSnap) {
-        if (onlineSnap.val() === null && self.playingState === Game.PlayingState.Watching) {
-            self.tryToJoin(1);
-        }
-        self.presence(1, onlineSnap.val());
-    });
-
-    if (self.playingState === Game.PlayingState.Watching) {
-        this.watchForNewStones();
+    function join(numPlayer) {
+        self.firebase.ref().child('player' + numPlayer + '/online').on('value', function (onlineSnap) {
+            if (_.isNull(onlineSnap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
+                self.tryToJoin(numPlayer);
+            }
+            self.presence(numPlayer, onlineSnap.val());
+        });
     }
+    join(0);
+    join(1);
+
+    this.watchForNewStones();
 };
 
 Game.Controller.prototype.tryToJoin = function (playerNum) {
     this.playerNum = playerNum;
     console.log("player" + playerNum + " tryToJoin");
+    
     // Set ourselves as joining to make sure we don't try to join as both players. :-)
     this.playingState = Game.PlayingState.Joining;
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.refFirebase.getRef().child('player' + playerNum + '/online').transaction(function (onlineVal) {
+    this.firebase.ref().child('player' + playerNum + '/online').transaction(function (onlineVal) {
         console.log("tryToJoin transaction ", onlineVal);
         if (onlineVal === null) {
             return true; // Try to set online to true.
@@ -76,24 +72,18 @@ Game.Controller.prototype.tryToJoin = function (playerNum) {
  * Once we've joined, enable controlling our player.
  */
 Game.Controller.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.refFirebase.getRef().child('player' + playerNum);
+    this.myPlayerRef = this.firebase.ref().child('player' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
 
-    // Detect when other player pushes rows to our board.
-    this.watchForNewStones();
-
-    // Detect when game is restarted by other player.
-    //this.watchForRestart();
-
     var self = this;
     $(".cell").click(function (event) {
-        var id = event.target.id;
-        var coord = {x:id.charAt(0), y:id.charAt(1), color:self.getColor()};
+        var ids = event.target.id.split("-");
+        var coord = {x:ids[0], y:ids[1], color:self.getColor()};
         var color = self.board.get(coord);
 
-        if (color != undefined && color == self.getColor()) {
+        if (color != undefined && _.isEqual(color, self.getColor())) {
             self.board.removeStone(coord);
             return;
         }
@@ -106,7 +96,7 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
  */
 Game.Controller.prototype.watchForNewStones = function () {
     var self = this;
-    var boardRef = this.refFirebase.getRef().child('board');
+    var boardRef = this.firebase.ref().child('board');
 
     boardRef.on('child_changed', function (snapshot) {
         var coord = snapshot.key();
