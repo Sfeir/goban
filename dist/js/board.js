@@ -18,26 +18,32 @@ Board.prototype.get = function (coord) {
 };
 
 Board.prototype.setStone = function (coord) {
-    if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
-        new PNotify({
-            title: 'Oh No!',
-            text: 'Outside goban or color invalid'
-        });
-        return false;
+    if (this.isOkSetStone(coord)) {
+        this.setClassName(coord, coord.color.toLowerCase());
+        this.stones[coord.x][coord.y] = coord.color;
     }
+};
 
-    if (this.stones[coord.x][coord.y] != undefined && this.stones[coord.x][coord.y] != coord.color) {
-        new PNotify({
-            title: 'Oh No!',
-            text: 'A stone already exists'
+Board.prototype.setStoneFirebase = function (coord, playerNum) {
+    if (this.isOkSetStone(coord) && !_.isNull(playerNum)) {
+
+        var player = 'player' + playerNum + '/token';
+        var self = this;
+        this.firebase.ref().child(player).once('value', function (onlineSnap) {
+            if (!_.isNull(onlineSnap.val())) {
+                self.setClassName(coord, coord.color.toLowerCase());
+                self.stones[coord.x][coord.y] = coord.color;
+
+                self.firebase.setStone(coord.x, coord.y, coord.color);
+                self.firebase.switchToken(playerNum);
+            } else {
+                new PNotify({
+                    title: 'Oh No!',
+                    text: 'This is your opponent\'s turn'
+                });
+            }
         });
-        return false;
     }
-
-    this.setClassName(coord, coord.color.toLowerCase());
-    this.stones[coord.x][coord.y] = coord.color;
-
-    return this.firebase.setStone(coord.x, coord.y, coord.color);
 };
 
 Board.prototype.removeStone = function (coord) {
@@ -69,6 +75,25 @@ Board.prototype.isCoordOnGoban = function (coord) {
 
 Board.prototype.isColorValid = function (color) {
     return (_.isEqual(color, Game.color.BLACK) || _.isEqual(color, Game.color.WHITE));
+};
+
+Board.prototype.isOkSetStone = function (coord) {
+    if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
+        new PNotify({
+            title: 'Oh No!',
+            text: 'Outside goban or color invalid'
+        });
+        return false;
+    }
+
+    if (this.stones[coord.x][coord.y] != undefined && this.stones[coord.x][coord.y] != coord.color) {
+        new PNotify({
+            title: 'Oh No!',
+            text: 'A stone already exists'
+        });
+        return false;
+    }
+    return true;
 };
 
 Board.prototype.convertStringToInt = function(str) {

@@ -53,7 +53,8 @@ Game.Controller.prototype.tryToJoin = function (playerNum) {
     this.firebase.ref().child('player' + playerNum + '/online').transaction(function (onlineVal) {
         console.log("tryToJoin transaction ", onlineVal);
         if (onlineVal === null) {
-            return true; // Try to set online to true.
+            self.firebase.setToken(playerNum);
+            return true; // Try to set online to true
         } else {
             return; // Somebody must have beat us.  Abort the transaction.
         }
@@ -87,7 +88,7 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
             self.board.removeStone(coord);
             return;
         }
-        self.board.setStone(coord);
+        self.board.setStoneFirebase(coord, playerNum);
     });
 };
 
