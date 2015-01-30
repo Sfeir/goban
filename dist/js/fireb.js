@@ -5,7 +5,7 @@ var FB = function (url, idGame) {
 
 FB.prototype.ref = function () {
     if (_.isEmpty(this.idGame)) {
-        var push = this.firebase.push();
+        var push = this.firebase.root().push();
         this.idGame = push.key();
         $(location).attr('href', "/?" + this.idGame);
         return push;
@@ -52,4 +52,29 @@ FB.prototype.switchToken = function (playerNum) {
     this.ref().child(opponent).transaction(function (onlineVal) {
         return true;
     });
+};
+
+/**
+ * Listens for data changes at a particular location
+ *
+ * <pre>
+ *     FB.on('board', 'child_added')
+ *       .progress( childAdded )
+ *       .fail( securityError )
+ *       .done( listenerDisposed )
+ * </pre>
+ *
+ * @param path
+ * @param event
+ * @returns {snapshot}
+ */
+FB.prototype.on = function(path, event) {
+    var def = $.Deferred();
+
+    function callback(snap) {
+        def.notify(snap);
+    }
+
+    this.ref().child(path).on(event, callback, def.reject);
+    return def.promise();
 };

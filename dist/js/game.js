@@ -28,13 +28,14 @@ Game.Controller.prototype.waitToJoin = function () {
 
     // Listen on 'online' location for player0 and player1.
     function join(numPlayer) {
-        self.firebase.ref().child('player' + numPlayer + '/online').on('value', function (onlineSnap) {
-            if (_.isNull(onlineSnap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
+        self.firebase.on('player' + numPlayer + '/online', "value").progress(function(snapshot) {
+            if (_.isNull(snapshot.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
                 self.tryToJoin(numPlayer);
             }
-            self.presence(numPlayer, onlineSnap.val());
+            self.presence(numPlayer, snapshot.val());
         });
     }
+
     join(0);
     join(1);
 
@@ -97,21 +98,14 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
  */
 Game.Controller.prototype.watchForNewStones = function () {
     var self = this;
-    var boardRef = this.firebase.ref().child('board');
 
-    boardRef.on('child_changed', function (snapshot) {
+    this.firebase.on("board", "child_added").progress(function(snapshot) {
         var coord = snapshot.key();
         var stone = snapshot.val();
         self.board.setStone({x:parseInt(coord.charAt(0)), y:parseInt(coord.charAt(1)), color:stone});
     });
 
-    boardRef.on('child_added', function (snapshot) {
-        var coord = snapshot.key();
-        var stone = snapshot.val();
-        self.board.setStone({x:parseInt(coord.charAt(0)), y:parseInt(coord.charAt(1)), color:stone});
-    });
-
-    boardRef.on('child_removed', function (snapshot) {
+    this.firebase.on("board", "child_removed").progress(function(snapshot) {
         var coord = snapshot.key();
         self.board.removeStone({x:coord.charAt(0), y:coord.charAt(1)});
     });
