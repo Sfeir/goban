@@ -2,14 +2,15 @@ var Board = function (size, refFirebase) {
     this.size = size;
     this.firebase = refFirebase;
     this.stones = [];
-    this.resetStones();
+    this.resetStones(this.size);
 };
+Board.Goban = {small: 9, medium: 13, large: 19};
 
-Board.prototype.resetStones = function () {
-    for (var x = 0; x < this.size; x++) {
+Board.prototype.resetStones = function (size) {
+    this.generateGoban(size);
+    for (var x = 1; x <= this.size; x++) {
         this.stones[x] = [];
     }
-    this.generateGoban();
 };
 
 Board.prototype.get = function (coord) {
@@ -121,36 +122,53 @@ Board.prototype.setClassName = function(coord, className) {
     }
 };
 
-Board.prototype.generateGoban = function () {
+Board.prototype.generateGoban = function (size) {
+    if (size != Board.Goban.small && size != Board.Goban.medium && size != Board.Goban.large) {
+        this.size = Board.Goban.medium;
+    }
+
     var r = document.getElementById('canvasGoban');
-    for (var row = this.size; row > 0; row--) {
-        for (var col = 0; col < this.size; col++) {
+    for (var row = 1; row <= this.size; row++) {
+        for (var col = 1; col <= this.size; col++) {
             var attrClass = [];
-            if (col == 0) {
+            if (col == 1) {
                 attrClass.push("first_col");
             }
-            if (col == this.size - 1) {
+            if (col == this.size) {
                 attrClass.push("last_col");
             }
-            if (row == this.size) {
+            if (row == 1) {
                 attrClass.push("first_row");
             }
-            if (row == 1) {
+            if (row == this.size) {
                 attrClass.push("last_row");
             }
-            if (row == 3 && col == 2) {
-                attrClass.push("oeil");
+
+            if (this.size == Board.Goban.small) {
+                if ((row == 3 && col == 3) ||
+                    (row == 7 && col == 3) ||
+                    (row == 3 && col == 7) ||
+                    (row == 7 && col == 7)) {
+                    attrClass.push("hoshi");
+                }
+            } else {
+                var hoshiMax = this.size - 3;
+                var hoshiMiddle = Math.round(this.size / 2);
+
+                if ((row == 4 && col == 4) ||
+                    (row == hoshiMax && col == 4) ||
+                    (row == 4 && col == hoshiMax) ||
+                    (row == hoshiMax && col == hoshiMax) ||
+                    (row == 4 && col == hoshiMiddle) ||
+                    (row == hoshiMiddle && col == 4) ||
+                    (row == hoshiMiddle && col == 4) ||
+                    (row == hoshiMiddle && col == hoshiMax) ||
+                    (row == hoshiMax && col == hoshiMiddle) ||
+                    (row == hoshiMiddle && col == hoshiMiddle)) {
+                    attrClass.push("hoshi");
+                }
             }
-            if (row == 7 && col == 2) {
-                attrClass.push("oeil");
-            }
-            if (row == 3 && col == 6) {
-                attrClass.push("oeil");
-            }
-            if (row == 7 && col == 6) {
-                attrClass.push("oeil");
-            }
-            r.innerHTML = r.innerHTML + "<a><div id='" + col + "-" + row + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
+            r.innerHTML = r.innerHTML + "<a><div id='" + col + "-" + (this.size - row + 1) + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
         }
     }
 };

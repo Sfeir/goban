@@ -1,3 +1,7 @@
+.container {
+    margin-top: 50px;
+}
+
 .goban {
     text-align: center;
 }
@@ -38,7 +42,7 @@
     background-image: url("/img/240px-go.svg.png");
 }
 
-.goban .cell.oeil {
+.goban .cell.hoshi {
     background-image: url("/img/240px-go_-.svg.png");
 }
 

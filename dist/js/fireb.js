@@ -15,11 +15,11 @@ FB.prototype.ref = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.ref().child('board/' + x + "" + y).set(color);
+    return this.ref().child('board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.ref().child('board/' + x + "" + y).remove();
+    return this.ref().child('board/' + x + "-" + y).remove();
 };
 
 FB.prototype.resetBoard = function () {

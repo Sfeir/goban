@@ -100,14 +100,14 @@ Game.Controller.prototype.watchForNewStones = function () {
     var self = this;
 
     this.firebase.on("board", "child_added").progress(function(snapshot) {
-        var coord = snapshot.key();
+        var coord = snapshot.key().split("-");
         var stone = snapshot.val();
-        self.board.setStone({x:parseInt(coord.charAt(0)), y:parseInt(coord.charAt(1)), color:stone});
+        self.board.setStone({x:parseInt(coord[0]), y:parseInt(coord[1]), color:stone});
     });
 
     this.firebase.on("board", "child_removed").progress(function(snapshot) {
-        var coord = snapshot.key();
-        self.board.removeStone({x:coord.charAt(0), y:coord.charAt(1)});
+        var coord = snapshot.key().split("-");
+        self.board.removeStone({x:parseInt(coord[0]), y:parseInt(coord[1])});
     });
 };
 
