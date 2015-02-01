@@ -1,4 +1,5 @@
 var Board = function (size, refFirebase) {
+    this.templateGame = _.template($('#template-game').html());
     this.size = size;
     this.firebase = refFirebase;
     this.stones = [];
@@ -113,6 +114,8 @@ Board.prototype.removeClassName = function (x, y) {
 };
 
 Board.prototype.generateGoban = function (size) {
+    $('#goban-game').html('').addClass('is-visible').append(this.templateGame);
+
     if (size != Board.Goban.small && size != Board.Goban.medium && size != Board.Goban.large) {
         this.size = Board.Goban.medium;
     }
