@@ -13,113 +13,103 @@ Board.prototype.resetStones = function (size) {
     }
 };
 
-Board.prototype.get = function (coord) {
+Board.prototype.get = function (x, y) {
     var _ref;
-    return (_ref = this.stones[coord.x]) != null ? _ref[coord.y] : void 0;
+    return (_ref = this.stones[x]) != null ? _ref[y] : void 0;
 };
 
-Board.prototype.setStone = function (coord) {
-    if (this.isOkSetStone(coord)) {
-        this.setClassName(coord, coord.color.toLowerCase());
-        this.stones[coord.x][coord.y] = coord.color;
+Board.prototype.setStone = function (x, y, color) {
+    if (this.isOkSetStone(x, y, color)) {
+        this.setClassName(x, y, color);
+        this.stones[x][y] = color;
     }
 };
 
-Board.prototype.setStoneFirebase = function (coord, playerNum) {
-    if (this.isOkSetStone(coord) && !_.isNull(playerNum)) {
+Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
+    if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
         var player = 'player' + playerNum + '/token';
         var self = this;
         this.firebase.ref().child(player).once('value', function (onlineSnap) {
             if (!_.isNull(onlineSnap.val())) {
-                self.setClassName(coord, coord.color.toLowerCase());
-                self.stones[coord.x][coord.y] = coord.color;
+                self.setClassName(x, y, color);
+                self.stones[x][y] = color;
 
-                self.firebase.setStone(coord.x, coord.y, coord.color);
+                self.firebase.setStone(x, y, color);
                 self.firebase.switchToken(playerNum);
             } else {
-                new PNotify({
-                    title: 'Oh No!',
-                    text: 'This is your opponent\'s turn'
-                });
+                new PNotify({ text: 'This is your opponent\'s turn' });
             }
         });
     }
 };
 
-Board.prototype.removeStone = function (coord) {
-    if (!this.isCoordOnGoban(coord)) {
-        new PNotify({
-            title: 'Oh No!',
-            text: 'Outside goban'
-        });
+Board.prototype.removeStone = function (x, y) {
+    if (!this.isCoordOnGoban(x, y)) {
+        new PNotify({ text: 'Outside goban' });
         return false;
     }
 
-    if (typeof this.stones[coord.x] == "undefined" || typeof this.stones[coord.x][coord.y] == "undefined") {
+    if (_.isUndefined(this.stones[x]) || _.isUndefined(this.stones[x][y])) {
         return;
     }
 
-    delete this.stones[coord.x][coord.y];
-    this.setClassName(coord);
-    this.firebase.removeStone(coord.x, coord.y);
+    this.removeClassName(x, y);
+    this.firebase.removeStone(x, y);
 };
 
-Board.prototype.init = function (goban) {
-    this.stones = goban;
-};
-
-Board.prototype.isCoordOnGoban = function (coord) {
-    return (0 <= coord.x && coord.x < this.size)
-        && (0 < coord.y && coord.y <= this.size);
+Board.prototype.isCoordOnGoban = function (x, y) {
+    return 0 < x && x <= this.size
+        && 0 < y && y <= this.size;
 };
 
 Board.prototype.isColorValid = function (color) {
     return (_.isEqual(color, Game.color.BLACK) || _.isEqual(color, Game.color.WHITE));
 };
 
-Board.prototype.isOkSetStone = function (coord) {
-    if (!this.isCoordOnGoban(coord) || !this.isColorValid(coord.color)) {
-        new PNotify({
-            title: 'Oh No!',
-            text: 'Outside goban or color invalid'
-        });
+Board.prototype.isOkSetStone = function (x, y, color) {
+    if (!this.isCoordOnGoban(x, y) || !this.isColorValid(color)) {
+        new PNotify({ text: 'Outside goban or color invalid' });
         return false;
     }
 
-    if (this.stones[coord.x][coord.y] != undefined && this.stones[coord.x][coord.y] != coord.color) {
-        new PNotify({
-            title: 'Oh No!',
-            text: 'A stone already exists'
-        });
+    if (this.stones[x][y] != undefined && this.stones[x][y] != color) {
+        new PNotify({ text: 'A stone already exists' });
         return false;
     }
     return true;
 };
 
-Board.prototype.convertStringToInt = function(str) {
+Board.prototype.convertStringToInt = function (str) {
     var start = "A".toUpperCase().charCodeAt(0);
     return str.charCodeAt(0) - start;
 };
 
-Board.prototype.convertIntToString = function(int) {
+Board.prototype.convertIntToString = function (int) {
     var start = "A".toUpperCase().charCodeAt(0);
     return String.fromCharCode(start + int);
 };
 
-Board.prototype.setClassName = function(coord, className) {
-    var d = document.getElementById(coord.x + "-" + coord.y);
-    d.className = d.className.replace(" stone", "")
-        .replace(Game.color.BLACK.toLowerCase(), "")
-        .replace(Game.color.WHITE.toLowerCase(), "");
+Board.prototype.setClassName = function (x, y, color) {
+    var d = this.removeClassName(x, y);
+    if (!_.isNull(d)) {
+        d.className = d.className + " stone " + color.toLowerCase();
+    }
+};
 
+Board.prototype.removeClassName = function (x, y) {
+    var d = document.getElementById(x + "-" + y);
     if (_.isNull(d)) {
+        console.error("getElementById is null for ", x, y);
         return false;
     }
 
-    if (!_.isEmpty(className)) {
-        d.className = d.className + " stone " + coord.color.toLowerCase();
-    }
+    d.className = d.className.replace(" stone", "")
+        .replace(Game.color.BLACK.toLowerCase(), "")
+        .replace(Game.color.WHITE.toLowerCase(), "");
+    delete this.stones[x][y];
+
+    return d;
 };
 
 Board.prototype.generateGoban = function (size) {

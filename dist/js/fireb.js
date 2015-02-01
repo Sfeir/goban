@@ -68,7 +68,7 @@ FB.prototype.switchToken = function (playerNum) {
  * @param event
  * @returns {snapshot}
  */
-FB.prototype.on = function(path, event) {
+FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
     function callback(snap) {

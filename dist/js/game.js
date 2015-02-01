@@ -2,7 +2,7 @@ var Game = function () {
 };
 
 Game.PlayingState = {Watching: 0, Joining: 1, Playing: 2};
-Game.color = {BLACK:"BLACK", WHITE: "WHITE"};
+Game.color = {BLACK: "BLACK", WHITE: "WHITE"};
 
 Game.Controller = function (size, url) {
     var idGame = window.location.search.substring(1);
@@ -28,7 +28,7 @@ Game.Controller.prototype.waitToJoin = function () {
 
     // Listen on 'online' location for player0 and player1.
     function join(numPlayer) {
-        self.firebase.on('player' + numPlayer + '/online', "value").progress(function(snapshot) {
+        self.firebase.on('player' + numPlayer + '/online', "value").progress(function (snapshot) {
             if (_.isNull(snapshot.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
                 self.tryToJoin(numPlayer);
             }
@@ -45,7 +45,7 @@ Game.Controller.prototype.waitToJoin = function () {
 Game.Controller.prototype.tryToJoin = function (playerNum) {
     this.playerNum = playerNum;
     console.log("player" + playerNum + " tryToJoin");
-    
+
     // Set ourselves as joining to make sure we don't try to join as both players. :-)
     this.playingState = Game.PlayingState.Joining;
 
@@ -81,15 +81,17 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
 
     var self = this;
     $(".cell").click(function (event) {
-        var ids = event.target.id.split("-");
-        var coord = {x:ids[0], y:ids[1], color:self.getColor()};
-        var color = self.board.get(coord);
+        var ids = event.target.id.split("-"),
+            x = ids[0],
+            y = ids[1];
 
+        var color = self.board.get(x, y);
         if (color != undefined && _.isEqual(color, self.getColor())) {
-            self.board.removeStone(coord);
+            self.board.removeStone(x, y);
             return;
         }
-        self.board.setStoneFirebase(coord, playerNum);
+
+        self.board.setStoneFirebase(x, y, self.getColor(), playerNum);
     });
 };
 
@@ -99,15 +101,15 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
 Game.Controller.prototype.watchForNewStones = function () {
     var self = this;
 
-    this.firebase.on("board", "child_added").progress(function(snapshot) {
+    this.firebase.on("board", "child_added").progress(function (snapshot) {
         var coord = snapshot.key().split("-");
         var stone = snapshot.val();
-        self.board.setStone({x:parseInt(coord[0]), y:parseInt(coord[1]), color:stone});
+        self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
     });
 
-    this.firebase.on("board", "child_removed").progress(function(snapshot) {
+    this.firebase.on("board", "child_removed").progress(function (snapshot) {
         var coord = snapshot.key().split("-");
-        self.board.removeStone({x:parseInt(coord[0]), y:parseInt(coord[1])});
+        self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
     });
 };
 
