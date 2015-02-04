@@ -1,34 +1,56 @@
-var Game = function () {
+Game = function (url) {
+    this.firebase = null;
+    this.board = null;
+    this.playingState = Game.PlayingState.Watching;
+    this.playerNum = null;
+    this.init(url);
 };
 
 Game.PlayingState = {Watching: 0, Joining: 1, Playing: 2};
 Game.color = {BLACK: "BLACK", WHITE: "WHITE"};
 
-Game.Controller = function (size, url) {
-    var idGame = window.location.search.substring(1);
-    this.firebase = new FB(url, idGame);
+Game.prototype.init = function (url) {
+    this.idGame = window.location.search.substring(1);
 
-    this.board = new Board(size, this.firebase);
+    if (_.isEmpty(this.idGame)) {
+        this.showFormCreateGame();
+    } else {
+        this.firebase = new FB(url, this.idGame);
+        var nbOcc = this.idGame.match("size=[0-9]{1,2}");
 
-    this.playingState = Game.PlayingState.Watching;
-    this.playerNum = null;
-
-    this.waitToJoin();
+        if (!_.isNull(nbOcc) && nbOcc.length == 1) {
+            var size = this.idGame.split("=")[1];
+            this.firebase.newIdGame(size).then(function (key) {
+                $(location).attr('href', "/?" + key);
+            });
+        } else {
+            var self = this;
+            this.firebase.once('size', 'value').then(function (snap) {
+                self.board = new Board(self.firebase, snap.val());
+                self.waitToJoin();
+            });
+        }
+    }
 };
 
-Game.Controller.prototype.getColor = function () {
+Game.prototype.showFormCreateGame = function () {
+    this.templateCreate = _.template($('#template-create').html());
+    $('#container-value').html('').addClass('is-visible').append(this.templateCreate);
+};
+
+Game.prototype.getColor = function () {
     if (this.playerNum == null) {
         return null;
     }
     return (this.playerNum == 0) ? Game.color.BLACK : Game.color.WHITE;
 };
 
-Game.Controller.prototype.waitToJoin = function () {
+Game.prototype.waitToJoin = function () {
     var self = this;
 
     // Listen on 'online' location for player0 and player1.
     function join(numPlayer) {
-        self.firebase.on('player' + numPlayer + '/online', "value").progress(function (snapshot) {
+        self.firebase.on('/player' + numPlayer + '/online', "value").progress(function (snapshot) {
             if (_.isNull(snapshot.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
                 self.tryToJoin(numPlayer);
             }
@@ -42,7 +64,7 @@ Game.Controller.prototype.waitToJoin = function () {
     this.watchForNewStones();
 };
 
-Game.Controller.prototype.tryToJoin = function (playerNum) {
+Game.prototype.tryToJoin = function (playerNum) {
     this.playerNum = playerNum;
     console.log("player" + playerNum + " tryToJoin");
 
@@ -73,7 +95,7 @@ Game.Controller.prototype.tryToJoin = function (playerNum) {
 /**
  * Once we've joined, enable controlling our player.
  */
-Game.Controller.prototype.startPlaying = function (playerNum) {
+Game.prototype.startPlaying = function (playerNum) {
     this.myPlayerRef = this.firebase.ref().child('player' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
@@ -98,7 +120,7 @@ Game.Controller.prototype.startPlaying = function (playerNum) {
 /**
  * Detect when our opponent pushes extra rows to us.
  */
-Game.Controller.prototype.watchForNewStones = function () {
+Game.prototype.watchForNewStones = function () {
     var self = this;
 
     this.firebase.on("board", "child_added").progress(function (snapshot) {
@@ -113,7 +135,7 @@ Game.Controller.prototype.watchForNewStones = function () {
     });
 };
 
-Game.Controller.prototype.presence = function (playerNum, user) {
+Game.prototype.presence = function (playerNum, user) {
     if (_.isEqual(playerNum, this.playerNum)) {
         return;
     }

@@ -1,10 +1,11 @@
-var Board = function (size, refFirebase) {
-    this.templateGame = _.template($('#template-game').html());
-    this.size = size;
+var Board = function (refFirebase, size) {
+    this.templateCreate = _.template($('#template-game').html());
     this.firebase = refFirebase;
     this.stones = [];
+    this.size = parseInt(size);
     this.resetStones(this.size);
 };
+
 Board.Goban = {small: 9, medium: 13, large: 19};
 
 Board.prototype.resetStones = function (size) {
@@ -114,7 +115,7 @@ Board.prototype.removeClassName = function (x, y) {
 };
 
 Board.prototype.generateGoban = function (size) {
-    $('#goban-game').html('').addClass('is-visible').append(this.templateGame);
+    $('#container-value').html('').addClass('is-visible').append(this.templateCreate);
 
     if (size != Board.Goban.small && size != Board.Goban.medium && size != Board.Goban.large) {
         this.size = Board.Goban.medium;

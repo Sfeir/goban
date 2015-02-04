@@ -7,7 +7,10 @@
 </head>
 <body>
 <div class="container">
-    <div id="goban-game"></div>
+    <div class="row text-center">
+        <h1>Goban with Firebase</h1>
+    </div>
+    <div id="container-value"></div>
 </div>
 
 <script id="template-game" type="text/template">
@@ -26,8 +29,36 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
-            <h1>Goban with Firebase</h1>
+    </div>
+</script>
+
+<script id="template-create" type="text/template">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Create new game</h2>
+
+            <form action="">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="size" id="optionsRadios1" value="9" checked>
+                        9x9
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="size" id="optionsRadios2" value="13">
+                        13x13
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="size" id="optionsRadios3" value="19">
+                        19x19
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Played</button>
+            </form>
         </div>
     </div>
 </script>
@@ -42,7 +73,7 @@
 <script>
     $(function () {
         // Firebase
-        new Game.Controller(13, 'https://goban.firebaseio.com/');
+        new Game('https://goban.firebaseio.com/');
 
         // Settings for PNotify
         PNotify.prototype.options.styling = "fontawesome";

@@ -4,14 +4,21 @@ var FB = function (url, idGame) {
 };
 
 FB.prototype.ref = function () {
-    if (_.isEmpty(this.idGame)) {
-        var push = this.firebase.root().push();
-        this.idGame = push.key();
-        $(location).attr('href', "/?" + this.idGame);
-        return push;
-    } else {
-        return this.firebase.child('/' + this.idGame + '/');
-    }
+    return this.firebase.child('/' + this.idGame + '/');
+};
+
+FB.prototype.newIdGame = function (size) {
+    var ref = this.firebase.root();
+    var key = ref.push().key();
+    var def = $.Deferred();
+    ref.child(key).set({size: size}, function(error) {
+        if (error) {
+            def.reject(error);
+        } else {
+            def.resolve(key);
+        }
+    });
+    return def.promise();
 };
 
 FB.prototype.setStone = function (x, y, color) {
@@ -49,7 +56,7 @@ FB.prototype.switchToken = function (playerNum) {
     var opponent = 'player' + numOpponent + '/token';
     var player = 'player' + playerNum + '/token';
     this.ref().child(player).set({});
-    this.ref().child(opponent).transaction(function (onlineVal) {
+    this.ref().child(opponent).transaction(function () {
         return true;
     });
 };
@@ -71,10 +78,39 @@ FB.prototype.switchToken = function (playerNum) {
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
-    function callback(snap) {
+    this.ref().child(path).on(event, function(snap) {
         def.notify(snap);
-    }
+    }, function (err) {
+        console.error('Access denied attempting to read database ', err, path, event)
+    });
 
-    this.ref().child(path).on(event, callback, def.reject);
+    return def.promise();
+};
+
+FB.prototype.once = function(path, event) {
+    var def = $.Deferred();
+
+    this.ref().child(path).once(event, function(snap) {
+        def.resolve(snap);
+    }, function(err) {
+        console.error('Access denied attempting to read database', err, path, event);
+        def.reject(err);
+    });
+
+    return def.promise();
+};
+
+FB.prototype.childWithTransaction = function (path, input) {
+    var def = $.Deferred();
+    this.ref().child(path).transaction(function (value) {
+        def.resolve(value);
+        if (value === null) {
+            return input;
+        } else {
+            return;
+        }
+    }, function (error, committed) {
+        def.reject(error, committed);
+    });
     return def.promise();
 };
