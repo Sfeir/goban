@@ -33,33 +33,26 @@
 </script>
 
 <script id="template-create" type="text/template">
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Create new game</h2>
+    <div>
+        <h2>Create new game</h2>
 
-            <form action="">
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="size" id="optionsRadios1" value="9" checked>
-                        9x9
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="size" id="optionsRadios2" value="13">
-                        13x13
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="size" id="optionsRadios3" value="19">
-                        19x19
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Played</button>
-            </form>
-        </div>
+        <form class="row" action="/" method="get">
+            <div class=" col-md-4 text-left">
+                <button class="btn-reset" type="submit" name="size" value="9">
+                    <img src="img/goban9.png" width="250"><br> 9x9
+                </button>
+            </div>
+            <div class=" col-md-4 text-left">
+                <button class="btn-reset text-center" type="submit" name="size" value="13">
+                    <img src="img/goban13.png" width="250"><br> 13x13
+                </button>
+            </div>
+            <div class=" col-md-4 text-left">
+                <button class="btn-reset" type="submit" name="size" value="19">
+                    <img src="img/goban19.png" width="250"><br> 19x19
+                </button>
+            </div>
+        </form>
     </div>
 </script>
 
