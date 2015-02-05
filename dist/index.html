@@ -1,31 +1,60 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="width=device-width" name="viewport">
     <link rel="stylesheet" type="text/css" href="./bower_components/pnotify/pnotify.core.css"/>
     <link rel="stylesheet" type="text/css" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="style/goban.css"/>
 </head>
 <body>
-<div class="container">
-    <div class="row text-center">
-        <h1>Goban with Firebase</h1>
+    <div class="header-background"></div>
+
+    <div class="container">
+        <div class="header row text-center">
+            <h1><a href="/"><img src="img/logo-sfeir.png" class="pull-left"></a> Goban with Firebase</h1>
+        </div>
+        <div id="container-value"></div>
     </div>
-    <div id="container-value"></div>
-</div>
 
 <script id="template-game" type="text/template">
     <div class="row">
-        <div class="col-md-7">
-            <div class='goban'>
-                <div>
-                    <span id="presence" class="label label-default"></span>
+        <div class="col-xs-12 col-sm-6 col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Game <span id="presence" class="label label-warning pull-right"></span></h3>
                 </div>
-                <div class='board'>
-                    <div id="canvasGoban"></div>
+                <div class="panel-body">
+                    <div class="goban">
+                        <div class="board">
+                            <div id="canvasGoban"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="action">
-                    <!--<a class="btn btn btn-danger" href="#" role="button">Restart</a>-->
-                    <!--<a class="btn btn btn-warning" href="#" role="button">Undo</a>-->
+                <div class="panel-footer text-right">
+                    <button class="btn btn-sm btn-warning">Undo</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Game info</h3>
+                </div>
+                <div class="panel-body">
+                    <span class="glyphicon glyphicon-link"></span> <a href="#">http://127.0.0.1:8080/?-JhOENka8xKZeeaNz3Sq</a>
+                </div>
+                <table class="table">
+                    <tr>
+                        <th>Score :</th>
+                        <td>5-9</td>
+                    </tr>
+                    <tr>
+                        <th>Spectators :</th>
+                        <td>8</td>
+                    </tr>
+                </table>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-block btn-sm btn-link">New game</button>
                 </div>
             </div>
         </div>
@@ -33,26 +62,58 @@
 </script>
 
 <script id="template-create" type="text/template">
-    <div>
-        <h2>Create new game</h2>
-
-        <form class="row" action="/" method="get">
-            <div class=" col-md-4 text-left">
-                <button class="btn-reset" type="submit" name="size" value="9">
-                    <img src="img/goban9.png" width="250"><br> 9x9
-                </button>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Create new game</h3>
+                </div>
+                <div class="panel-body text-center">
+                    <form action="/" method="get">
+                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                            <button class="btn-reset" type="submit" name="size" value="9">
+                                <img src="img/goban9.png" height="200"><br> 9x9
+                            </button>
+                        </div>
+                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                            <button class="btn-reset text-center" type="submit" name="size" value="13">
+                                <img src="img/goban13.png" height="200"><br> 13x13
+                            </button>
+                        </div>
+                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                            <button class="btn-reset" type="submit" name="size" value="19">
+                                <img src="img/goban19.png" height="200"><br> 19x19
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class=" col-md-4 text-left">
-                <button class="btn-reset text-center" type="submit" name="size" value="13">
-                    <img src="img/goban13.png" width="250"><br> 13x13
-                </button>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Running game</h3>
+                </div>
+                <div class="list-group">
+                  <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading">Game : JhOENka8xKZeeaNz3Sq</h4>
+                    <p class="list-group-item-text"><b>Score :</b> 5-9</p>
+                  </a>
+                  <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading">Game : JhOENka8xKZeeaNz3Sq</h4>
+                    <p class="list-group-item-text"><b>Score :</b> 5-9</p>
+                  </a>
+                  <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading">Game : JhOENka8xKZeeaNz3Sq</h4>
+                    <p class="list-group-item-text"><b>Score :</b> 5-9</p>
+                  </a>
+                  <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading">Game : JhOENka8xKZeeaNz3Sq</h4>
+                    <p class="list-group-item-text"><b>Score :</b> 5-9</p>
+                  </a>
+                </div>
             </div>
-            <div class=" col-md-4 text-left">
-                <button class="btn-reset" type="submit" name="size" value="19">
-                    <img src="img/goban19.png" width="250"><br> 19x19
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </script>
 
