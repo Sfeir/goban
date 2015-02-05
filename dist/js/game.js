@@ -141,8 +141,14 @@ Game.prototype.presence = function (playerNum, user) {
     }
 
     if (user) {
-        $("#presence").text("Opponent : ★ online");
+        $("#presence")
+            .addClass('label-success')
+            .removeClass('label-warning')
+            .text("★ opponent online");
     } else {
-        $("#presence").text("Opponent : ☆ idle");
+        $("#presence")
+            .addClass('label-warning')
+            .removeClass('label-success')
+            .text("☆ opponent idle");
     }
 };

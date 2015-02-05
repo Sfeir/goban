@@ -1,16 +1,53 @@
-.goban {
-    text-align: center;
-}
+/* ==========================================================================
+   Generic
+   ========================================================================== */
+    .goban {
+        text-align: center;
+    }
+
+    .header-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        height: 60px;
+        background: #1c3058;
+        border-bottom: 5px solid #FF844A;
+    }
+
+    .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .header {
+        margin-bottom: 30px;
+        color: #fff;
+        line-height: 60px;
+    }
+
+    .header h1 {
+        margin-top: 8px;
+    }
+
+    .header img {
+        margin-top: 5px;
+    }
 
 /* ==========================================================================
    New game view
    ========================================================================== */
-.btn-reset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    background: none;
-}
+    .btn-reset {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        background: none;
+    }
+
+    .go-game {
+        margin-bottom: 20px;
+    }
 
 /* ==========================================================================
    Game view
@@ -21,6 +58,7 @@
     font-size: 0;
     padding: 12px;
     position: relative;
+    cursor: pointer;
 }
 
 .goban .board::after {
@@ -96,3 +134,8 @@
 .goban .stone.white {
     background-image: url("/img/240px-go_w.svg.png") !important;
 }
+
+/* ==========================================================================
+   Game info
+   ========================================================================== */
+    
