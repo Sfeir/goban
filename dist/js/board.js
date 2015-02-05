@@ -50,7 +50,12 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     if (!_.isNull(playerNum)) {
         var player = 'player' + playerNum + '/token';
         var self = this;
-        this.firebase.ref().child(player).once('value', function (onlineSnap) {
+
+        this.firebase.once(player, 'value').then(function () {
+            new PNotify({
+                text: 'You skip your turn',
+                type: "notice"
+            });
             self.firebase.switchToken(playerNum);
         });
     }
