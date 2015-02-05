@@ -115,6 +115,10 @@ Game.prototype.startPlaying = function (playerNum) {
 
         self.board.setStoneFirebase(x, y, self.getColor(), playerNum);
     });
+
+    $("#skip").on("click", function (event) {
+        self.board.skipTurnFirebase(playerNum);
+    });
 };
 
 /**

@@ -46,6 +46,16 @@ Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     }
 };
 
+Board.prototype.skipTurnFirebase = function (playerNum) {
+    if (!_.isNull(playerNum)) {
+        var player = 'player' + playerNum + '/token';
+        var self = this;
+        this.firebase.ref().child(player).once('value', function (onlineSnap) {
+            self.firebase.switchToken(playerNum);
+        });
+    }
+};
+
 Board.prototype.removeStone = function (x, y) {
     if (!this.isCoordOnGoban(x, y)) {
         new PNotify({ text: 'Outside goban' });
