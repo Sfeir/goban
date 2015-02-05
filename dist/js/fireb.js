@@ -62,7 +62,7 @@ FB.prototype.switchToken = function (playerNum) {
 };
 
 /**
- * Listens for data changes at a particular location
+ * Calls Firebase.on(), Listens for data changes at a particular location
  *
  * <pre>
  *     FB.on('board', 'child_added')
@@ -73,7 +73,7 @@ FB.prototype.switchToken = function (playerNum) {
  *
  * @param path
  * @param event
- * @returns {snapshot}
+ * @return {jQuery.Deferred}
  */
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
@@ -87,6 +87,13 @@ FB.prototype.on = function (path, event) {
     return def.promise();
 };
 
+/**
+ * Calls Firebase.once(), Listens for exactly one event of the specified event type, and then stops listening.
+ *
+ * @param path
+ * @param event
+ * @returns {jQuery.Deferred}
+ */
 FB.prototype.once = function(path, event) {
     var def = $.Deferred();
 
