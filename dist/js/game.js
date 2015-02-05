@@ -28,8 +28,16 @@ Game.prototype.init = function (url) {
             this.firebase.once('size', 'value').then(function (snap) {
                 self.board = new Board(self.firebase, snap.val());
                 self.waitToJoin();
+                self.addShareLink();
             });
         }
+    }
+};
+
+Game.prototype.addShareLink = function () {
+    var r = document.getElementById("share-link");
+    if (r !== null) {
+        r.innerHTML = window.location.href;
     }
 };
 
