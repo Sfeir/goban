@@ -1,5 +1,6 @@
-var Board = function (refFirebase, size) {
+var Board = function (refFirebase, size, idGame) {
     this.templateCreate = _.template($('#template-game').html());
+    this.idGame = idGame;
     this.firebase = refFirebase;
     this.stones = [];
     this.size = parseInt(size);
@@ -30,9 +31,10 @@ Board.prototype.setStone = function (x, y, color) {
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
-        var player = 'player' + playerNum + '/token';
+        var player = 'game/' + this.idGame + '/player' + playerNum + '/token';
         var self = this;
-        this.firebase.ref().child(player).once('value', function (onlineSnap) {
+
+        this.firebase.once(player, 'value').then(function (onlineSnap) {
             if (!_.isNull(onlineSnap.val())) {
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
@@ -50,7 +52,12 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     if (!_.isNull(playerNum)) {
         var player = 'player' + playerNum + '/token';
         var self = this;
-        this.firebase.ref().child(player).once('value', function (onlineSnap) {
+
+        this.firebase.once(player, 'value').then(function () {
+            new PNotify({
+                text: 'You skip your turn',
+                type: "notice"
+            });
             self.firebase.switchToken(playerNum);
         });
     }
