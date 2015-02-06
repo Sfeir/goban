@@ -4,7 +4,7 @@ var FB = function (url, idGame) {
 };
 
 FB.prototype.ref = function () {
-    return this.firebase.child('/' + this.idGame + '/');
+    return this.firebase;
 };
 
 FB.prototype.newIdGame = function (size) {
@@ -22,27 +22,22 @@ FB.prototype.newIdGame = function (size) {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.ref().child('board/' + x + "-" + y).set(color);
+    return this.firebase.child(this.idGame + '/board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.ref().child('board/' + x + "-" + y).remove();
-};
-
-FB.prototype.resetBoard = function () {
-    this.ref().child('board').remove();
+    return this.firebase.child(this.idGame + '/board/' + x + "-" + y).remove();
 };
 
 FB.prototype.setToken = function (playerNum) {
     var numOpponent = Math.abs(playerNum - 1);
-    // TODO Utilise la méthode waitToJoin afin de réduire les connexions
     var self = this;
-    var player = 'player' + playerNum + '/token';
-    var opponent = 'player' + numOpponent + '/token';
-    this.ref().child(player).once('value', function (onlineSnap) {
-        self.ref().child(opponent).once('value', function (onlineSnapOpponent) {
+    var player = this.idGame + '/player' + playerNum + '/token';
+    var opponent = this.idGame + 'player' + numOpponent + '/token';
+    this.firebase.child(player).once('value', function (onlineSnap) {
+        self.firebase.child(opponent).once('value', function (onlineSnapOpponent) {
             if (_.isNull(onlineSnap.val()) && _.isNull(onlineSnapOpponent.val())) {
-                self.ref().child(player).transaction(function () {
+                self.firebase.child(player).transaction(function () {
                     return true;
                 });
             }
@@ -51,12 +46,11 @@ FB.prototype.setToken = function (playerNum) {
 };
 
 FB.prototype.switchToken = function (playerNum) {
-    // TODO Utilise la méthode waitToJoin afin de réduire les connexions
     var numOpponent = Math.abs(playerNum - 1);
-    var opponent = 'player' + numOpponent + '/token';
-    var player = 'player' + playerNum + '/token';
-    this.ref().child(player).set({});
-    this.ref().child(opponent).transaction(function () {
+    var opponent = this.idGame + '/player' + numOpponent + '/token';
+    var player = this.idGame + '/player' + playerNum + '/token';
+    this.firebase.child(player).set({});
+    this.firebase.child(opponent).transaction(function () {
         return true;
     });
 };
@@ -78,7 +72,7 @@ FB.prototype.switchToken = function (playerNum) {
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).on(event, function(snap) {
+    this.firebase.child(path).on(event, function(snap) {
         def.notify(snap);
     }, function (err) {
         console.error('Access denied attempting to read database ', err, path, event)
@@ -97,7 +91,7 @@ FB.prototype.on = function (path, event) {
 FB.prototype.once = function(path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).once(event, function(snap) {
+    this.firebase.child(path).once(event, function(snap) {
         def.resolve(snap);
     }, function(err) {
         console.error('Access denied attempting to read database', err, path, event);
@@ -109,7 +103,7 @@ FB.prototype.once = function(path, event) {
 
 FB.prototype.childWithTransaction = function (path, input) {
     var def = $.Deferred();
-    this.ref().child(path).transaction(function (value) {
+    this.firebase.child(path).transaction(function (value) {
         def.resolve(value);
         if (value === null) {
             return input;

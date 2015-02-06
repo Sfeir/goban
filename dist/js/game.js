@@ -25,8 +25,9 @@ Game.prototype.init = function (url) {
             });
         } else {
             var self = this;
-            this.firebase.once('size', 'value').then(function (snap) {
-                self.board = new Board(self.firebase, snap.val());
+            console.log(self.idGame);
+            this.firebase.once(self.idGame + '/size', 'value').then(function (snap) {
+                self.board = new Board(self.firebase, snap.val(), self.idGame);
                 self.waitToJoin();
                 self.addShareLink();
             });
@@ -58,7 +59,7 @@ Game.prototype.waitToJoin = function () {
 
     // Listen on 'online' location for player0 and player1.
     function join(numPlayer) {
-        self.firebase.on('/player' + numPlayer + '/online', "value").progress(function (snapshot) {
+        self.firebase.on(self.idGame + '/player' + numPlayer + '/online', 'value').progress(function (snapshot) {
             if (_.isNull(snapshot.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
                 self.tryToJoin(numPlayer);
             }
@@ -81,7 +82,7 @@ Game.prototype.tryToJoin = function (playerNum) {
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.firebase.ref().child('player' + playerNum + '/online').transaction(function (onlineVal) {
+    this.firebase.ref().child(self.idGame + '/player' + playerNum + '/online').transaction(function (onlineVal) {
         console.log("tryToJoin transaction ", onlineVal);
         if (onlineVal === null) {
             self.firebase.setToken(playerNum);
@@ -104,7 +105,7 @@ Game.prototype.tryToJoin = function (playerNum) {
  * Once we've joined, enable controlling our player.
  */
 Game.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.firebase.ref().child('player' + playerNum);
+    this.myPlayerRef = this.firebase.ref().child(this.idGame + '/player' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
@@ -135,13 +136,13 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
-    this.firebase.on("board", "child_added").progress(function (snapshot) {
+    this.firebase.on(this.idGame + '/board', 'child_added').progress(function (snapshot) {
         var coord = snapshot.key().split("-");
         var stone = snapshot.val();
         self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
     });
 
-    this.firebase.on("board", "child_removed").progress(function (snapshot) {
+    this.firebase.on(this.idGame + '/board', 'child_removed').progress(function (snapshot) {
         var coord = snapshot.key().split("-");
         self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
     });
