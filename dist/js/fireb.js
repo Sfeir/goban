@@ -22,18 +22,18 @@ FB.prototype.newIdGame = function (size) {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.firebase.child(this.idGame + '/board/' + x + "-" + y).set(color);
+    return this.firebase.child('game/' + this.idGame + '/board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.firebase.child(this.idGame + '/board/' + x + "-" + y).remove();
+    return this.firebase.child('game/' + this.idGame + '/board/' + x + "-" + y).remove();
 };
 
 FB.prototype.setToken = function (playerNum) {
     var numOpponent = Math.abs(playerNum - 1);
     var self = this;
-    var player = this.idGame + '/player' + playerNum + '/token';
-    var opponent = this.idGame + 'player' + numOpponent + '/token';
+    var player = 'game/' + this.idGame + '/player' + playerNum + '/token';
+    var opponent = 'game/' + this.idGame + 'player' + numOpponent + '/token';
     this.firebase.child(player).once('value', function (onlineSnap) {
         self.firebase.child(opponent).once('value', function (onlineSnapOpponent) {
             if (_.isNull(onlineSnap.val()) && _.isNull(onlineSnapOpponent.val())) {
@@ -47,8 +47,8 @@ FB.prototype.setToken = function (playerNum) {
 
 FB.prototype.switchToken = function (playerNum) {
     var numOpponent = Math.abs(playerNum - 1);
-    var opponent = this.idGame + '/player' + numOpponent + '/token';
-    var player = this.idGame + '/player' + playerNum + '/token';
+    var opponent = 'game/' + this.idGame + '/player' + numOpponent + '/token';
+    var player = 'game/' + this.idGame + '/player' + playerNum + '/token';
     this.firebase.child(player).set({});
     this.firebase.child(opponent).transaction(function () {
         return true;
