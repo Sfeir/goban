@@ -4,12 +4,12 @@ var Board = function (refFirebase, size, idGame) {
     this.firebase = refFirebase;
     this.stones = [];
     this.size = parseInt(size);
-    this.resetStones(this.size);
+    this.init(this.size);
 };
 
 Board.Goban = {small: 9, medium: 13, large: 19};
 
-Board.prototype.resetStones = function (size) {
+Board.prototype.init = function (size) {
     this.generateGoban(size);
     for (var x = 1; x <= this.size; x++) {
         this.stones[x] = [];

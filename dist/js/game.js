@@ -14,25 +14,25 @@ Game.prototype.init = function (url) {
 
     if (_.isEmpty(this.idGame)) {
         this.showFormCreateGame();
-    } else {
-        this.firebase = new FB(url, this.idGame);
-        var nbOcc = this.idGame.match("size=[0-9]{1,2}");
-
-        if (!_.isNull(nbOcc) && nbOcc.length == 1) {
-            var size = this.idGame.split("=")[1];
-            this.firebase.newIdGame(size).then(function (key) {
-                $(location).attr('href', "/?" + key);
-            });
-        } else {
-            var self = this;
-            console.log(self.idGame);
-            this.firebase.once('game/' + self.idGame + '/size', 'value').then(function (snap) {
-                self.board = new Board(self.firebase, snap.val(), self.idGame);
-                self.waitToJoin();
-                self.addShareLink();
-            });
-        }
+        return;
     }
+
+    this.firebase = new FB(url, this.idGame);
+    var nbOcc = this.idGame.match("size=[0-9]{1,2}");
+
+    if (!_.isNull(nbOcc) && nbOcc.length == 1) {
+        var size = this.idGame.split("=")[1];
+        this.firebase.newIdGame(size).then(function (key) {
+            $(location).attr('href', "/?" + key);
+        });
+    }
+
+    var self = this;
+    this.firebase.once('games/' + self.idGame + '/size', 'value').then(function (snap) {
+        self.board = new Board(self.firebase, snap.val(), self.idGame);
+        self.waitToJoin();
+        self.addShareLink();
+    });
 };
 
 Game.prototype.addShareLink = function () {
