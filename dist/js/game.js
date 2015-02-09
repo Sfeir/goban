@@ -14,7 +14,7 @@ Game.color = {BLACK: "BLACK", WHITE: "WHITE"};
 
 Game.prototype.init = function () {
     this.board = new Board(this.firebase, this.size, this.idGame);
-    console.log(this.board);
+    this.addShareLink();
     this.waitToJoin();
 };
 
@@ -53,7 +53,6 @@ Game.prototype.waitToJoin = function () {
 
 Game.prototype.tryToJoin = function (playerNum) {
     this.playerNum = playerNum;
-    console.log("player" + playerNum + " tryToJoin");
 
     // Set ourselves as joining to make sure we don't try to join as both players. :-)
     this.playingState = Game.PlayingState.Joining;
@@ -61,7 +60,7 @@ Game.prototype.tryToJoin = function (playerNum) {
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
     this.firebase.ref().child('games/' + self.idGame + '/player' + playerNum + '/online').transaction(function (onlineVal) {
-        console.log("tryToJoin transaction ", onlineVal);
+        console.log("player " + playerNum + " tryToJoin transaction ", onlineVal);
         if (onlineVal === null) {
             self.firebase.setToken(playerNum);
             return true; // Try to set online to true
