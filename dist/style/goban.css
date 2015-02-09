@@ -57,7 +57,6 @@
     width: 400px;
     height: 400px;
     margin: 0 auto;
-    padding: 17px;
     position: relative;
     cursor: pointer;
     background: #dcb35b;
@@ -71,6 +70,10 @@
     left: 0;
 }
 
+.goban .board svg {
+    padding: 4.166666%;
+}
+
 .goban .board::after {
     content: "";
     display: table;
@@ -82,8 +85,8 @@
     float: left;
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    width: 7.692%;
-    height: 7.692%;
+    width: 7.692307%;
+    height: 7.692307%;
 }
 
 .goban .action a {

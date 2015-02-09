@@ -133,7 +133,7 @@ Board.prototype.removeClassName = function (x, y) {
 
 Board.prototype.generateGoban = function (size) {
     $('#container-value').html('').addClass('is-visible').append(this.templateCreate);
-
+console.log(size)
     if (size != Board.Goban.small && size != Board.Goban.medium && size != Board.Goban.large) {
         this.size = Board.Goban.medium;
     }
