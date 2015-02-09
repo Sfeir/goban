@@ -11,7 +11,7 @@ FB.prototype.newIdGame = function (size) {
     var ref = this.firebase.root();
     var key = ref.push().key();
     var def = $.Deferred();
-    ref.child(key).set({size: size}, function(error) {
+    ref.child('games/' + key).set({size: size}, function(error) {
         if (error) {
             def.reject(error);
         } else {
