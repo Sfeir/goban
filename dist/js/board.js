@@ -138,9 +138,9 @@ Board.prototype.generateGoban = function (size) {
         this.size = Board.Goban.medium;
     }
 
-    $('#gb' + size).show();
-
     var r = document.getElementById('canvasGoban');
+    $(r).addClass('gb' + size);
+    $('#gb' + size).show();
     for (var row = 1; row <= this.size; row++) {
         for (var col = 1; col <= this.size; col++) {
             var attrClass = [];
