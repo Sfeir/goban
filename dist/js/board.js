@@ -1,9 +1,9 @@
-var Board = function (refFirebase, size, idGame) {
+var Board = function (firebase, size, idGame) {
     this.templateCreate = _.template($('#template-game').html());
-    this.idGame = idGame;
-    this.firebase = refFirebase;
-    this.stones = [];
+    this.firebase = firebase;
     this.size = parseInt(size);
+    this.idGame = idGame;
+    this.stones = [];
     this.init(this.size);
 };
 
