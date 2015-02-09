@@ -179,7 +179,7 @@ Board.prototype.generateGoban = function (size) {
                     attrClass.push("hoshi");
                 }
             }
-            r.innerHTML = r.innerHTML + "<a><div id='" + col + "-" + (this.size - row + 1) + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
+            r.innerHTML = r.innerHTML + "<div id='" + col + "-" + (this.size - row + 1) + "' class=\"cell " + attrClass.join(" ") + "\"></div>";
         }
     }
 };

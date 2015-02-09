@@ -54,11 +54,21 @@
    ========================================================================== */
 
 .goban .board {
-    display: inline-block;
-    font-size: 0;
-    padding: 12px;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    padding: 17px;
     position: relative;
     cursor: pointer;
+    background: #dcb35b;
+}
+
+.goban .board .canvas {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .goban .board::after {
@@ -72,8 +82,8 @@
     float: left;
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    width: 30px;
-    height: 30px;
+    width: 7.692%;
+    height: 7.692%;
 }
 
 .goban .action a {
@@ -86,45 +96,8 @@
     background-color: transparent;
 }
 
-.goban .cell {
-    background-image: url("/img/240px-go.svg.png");
-}
-
-.goban .cell.hoshi {
-    background-image: url("/img/240px-go_-.svg.png");
-}
-
 .goban .cell.first_col {
-    background-image: url("/img/240px-go_l.svg.png");
     clear: left;
-}
-
-.goban .cell.last_col {
-    background-image: url("/img/240px-go_r.svg.png");
-}
-
-.goban .cell.first_row {
-    background-image: url("/img/240px-go_u.svg.png");
-}
-
-.goban .cell.last_row {
-    background-image: url("/img/240px-go_d.svg.png");
-}
-
-.goban .cell.first_col.first_row {
-    background-image: url("/img/240px-go_ul.svg.png");
-}
-
-.goban .cell.first_col.last_row {
-    background-image: url("/img/240px-go_dl.svg.png");
-}
-
-.goban .cell.last_col.first_row {
-    background-image: url("/img/240px-go_ur.svg.png");
-}
-
-.goban .cell.last_col.last_row {
-    background-image: url("/img/240px-go_dr.svg.png");
 }
 
 .goban .stone.black {

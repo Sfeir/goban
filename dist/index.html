@@ -30,7 +30,25 @@
                 <div class="panel-body">
                     <div class="goban">
                         <div class="board">
-                            <div id="canvasGoban"></div>
+                          <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <defs>
+                              <pattern id="grid" width="8.333%" height="8.333%" patternUnits="userSpaceOnUse">
+                                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="black" stroke-width=".8"/>
+                              </pattern>
+                            </defs>
+                            <circle fill="black" stroke="none" cx="25.2%" cy="25.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="25.2%" cy="50.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="25.2%" cy="75.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="50.2%" cy="25.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="50.2%" cy="50.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="50.2%" cy="75.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="75.2%" cy="25.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="75.2%" cy="50.2%" r="1"></circle>
+                            <circle fill="black" stroke="none" cx="75.2%" cy="75.2%" r="1"></circle>
+                            <path d="M 100 0 L 100 100 0 100" fill="none" stroke="black" stroke-width=".8"></path>
+                            <rect width="100%" height="100%" fill="url(#grid)" />
+                          </svg>
+                            <div id="canvasGoban" class="canvas"></div>
                         </div>
                     </div>
                 </div>
