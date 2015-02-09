@@ -70,6 +70,10 @@
     left: 0;
 }
 
+.gb {
+    display: none;
+}
+
 .goban .board svg {
     padding: 4.166666%;
 }
