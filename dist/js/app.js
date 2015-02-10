@@ -11,7 +11,9 @@ App.prototype.init = function (url) {
 
     if (_.isEmpty(this.idGame)) {
         var welcome = new Welcome();
+        this.firebase = new FB(url, null);
         welcome.showFormCreateGame();
+        welcome.listGames(this.firebase);
         return;
     }
 

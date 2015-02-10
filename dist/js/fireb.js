@@ -21,6 +21,14 @@ FB.prototype.newIdGame = function (size) {
     return def.promise();
 };
 
+FB.prototype.getGames = function () {
+    var def = $.Deferred();
+    this.firebase.child('games').orderByKey().limitToLast(5).once('value', function(snap){
+        def.resolve(snap.val());
+    });
+    return def.promise();
+};
+
 FB.prototype.setStone = function (x, y, color) {
     return this.firebase.child('games/' + this.idGame + '/board/' + x + "-" + y).set(color);
 };
