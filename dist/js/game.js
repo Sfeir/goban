@@ -19,9 +19,9 @@ Game.prototype.init = function () {
 };
 
 Game.prototype.addShareLink = function () {
-    var r = document.getElementById("share-link");
-    if (r !== null) {
-        r.innerHTML = window.location.href;
+    var link = $("#share-link");
+    if (link !== null) {
+        link.text(window.location.href).attr('href', window.location.href);
     }
 };
 
@@ -86,6 +86,8 @@ Game.prototype.startPlaying = function (playerNum) {
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
+
+    $("#player-num").text('- player ' + playerNum);
 
     var self = this;
     $(".cell").click(function (event) {
