@@ -201,11 +201,11 @@ Board.prototype.generatorSVG = function (size) {
 Board.prototype.generateGoban = function (size) {
     $('#container-value').html('').addClass('is-visible').append(this.templateCreate);
 
-    this.generatorSVG(size);
-
     if (size != Board.Goban.small && size != Board.Goban.medium && size != Board.Goban.large) {
         this.size = Board.Goban.medium;
     }
+
+    this.generatorSVG(this.size);
 
     var r = document.getElementById('canvasGoban');
     $(r).addClass('gb' + size);
