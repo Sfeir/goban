@@ -70,30 +70,6 @@
     left: 0;
 }
 
-.gb {
-    display: none;
-}
-
-#gb9 {padding: 6.25%;}
-#gb13 {padding: 4.166666%;}
-#gb19 {padding: 2.777777%;}
-
-.gb9 .content,
-.gb9 .cell {
-    width: 11.111111%;
-    height: 11.111111%;
-}
-.gb13 .content,
-.gb13 .cell {
-    width: 7.692307%;
-    height: 7.692307%;
-}
-.gb19 .content,
-.gb19 .cell {
-    width: 5.263157%;
-    height: 5.263157%;
-}
-
 .goban .board::after {
     content: "";
     display: table;
