@@ -131,6 +131,73 @@ Board.prototype.removeClassName = function (x, y) {
     return d;
 };
 
+Board.prototype.generatorSVG = function (size) {
+    var boardGo = document.getElementById('board');
+    var canvasGoban = document.getElementById('canvasGoban');
+    var svgns = 'http://www.w3.org/2000/svg';
+
+    var svg = document.createElementNS(svgns, 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.setAttribute('style', 'padding:' + (100/((size-1)*2)) + '%;');
+
+    var defs = document.createElementNS(svgns, "defs");
+
+    var path = document.createElementNS(svgns, "path");
+        path.setAttribute('d', 'M 100 0 L 100 100 0 100');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'black');
+        path.setAttribute('stroke-width', '.4');
+
+    var pattern = document.createElementNS(svgns, "pattern");
+        pattern.setAttribute('id', 'grid');
+        pattern.setAttribute('width', 100/(size-1) + '%');
+        pattern.setAttribute('height', 100/(size-1) + '%');
+        pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+
+    var patternPath = document.createElementNS(svgns, "path");
+        patternPath.setAttribute('d', 'M 30 0 L 0 0 0 30');
+        patternPath.setAttribute('fill', 'none');
+        patternPath.setAttribute('stroke', 'black');
+        patternPath.setAttribute('stroke-width', '.8');
+
+    pattern.appendChild(patternPath);
+    defs.appendChild(pattern);
+
+    var hoshi9X = ['25.2%', '25.2%', '75.2%', '75.2%'];
+    var hoshi9Y = ['25.2%', '75.2%', '25.2%', '75.2%'];
+    var space1 = ((Math.round(((100/(size-1))*3) * 100) / 100)+ 0.2) + '%';
+    var space2 = ((Math.round(((100/(size-1))*((size-1)/2)) * 100) / 100)+ 0.2) + '%';
+    var space3 = ((Math.round(((100/(size-1))*(size-4)) * 100) / 100) + 0.2) + '%';
+    var hoshiX = [space1, space1, space1, space2, space2, space2, space3, space3, space3];
+    var hoshiY = [space1, space2, space3, space1, space2, space3, space1, space2, space3];
+
+    for (var i=0;i < ((size > 9) ? 9 : 4);++i) {
+        // Boucle 4x pour un goban de 9
+        // Boucle 9x pour un goban > 9
+        var circle = document.createElementNS(svgns, "circle");
+            circle.setAttribute('fill', 'black');
+            circle.setAttribute('stroke', 'none');
+            circle.setAttribute('cx', (size > 9) ? hoshiX[i] : hoshi9X[i]);
+            circle.setAttribute('cy', (size > 9) ? hoshiY[i] : hoshi9Y[i]);
+            circle.setAttribute('r', '1');
+
+        svg.appendChild(circle);
+    }
+
+    var rect = document.createElementNS(svgns, "rect");
+        rect.setAttribute('width', '100%');
+        rect.setAttribute('height', '100%');
+        rect.setAttribute('fill', 'url(#grid)');
+
+    svg.appendChild(defs);
+    svg.appendChild(path);
+    svg.appendChild(rect);
+    boardGo.insertBefore(svg, canvasGoban);
+}
+
 Board.prototype.generateGoban = function (size) {
     $('#container-value').html('').addClass('is-visible').append(this.templateCreate);
 
@@ -138,7 +205,11 @@ Board.prototype.generateGoban = function (size) {
         this.size = Board.Goban.medium;
     }
 
+    this.generatorSVG(this.size);
+
     var r = document.getElementById('canvasGoban');
+    $(r).addClass('gb' + size);
+    $('#gb' + size).show();
     for (var row = 1; row <= this.size; row++) {
         for (var col = 1; col <= this.size; col++) {
             var attrClass = [];
@@ -179,7 +250,7 @@ Board.prototype.generateGoban = function (size) {
                     attrClass.push("hoshi");
                 }
             }
-            r.innerHTML = r.innerHTML + "<a><div id='" + col + "-" + (this.size - row + 1) + "' class=\"cell " + attrClass.join(" ") + "\"></div></a>";
+            r.innerHTML = r.innerHTML + '<div id="' + col + '-' + (this.size - row + 1) + '" class="cell ' + attrClass.join(' ') + '" style="width:' + (100/size) + '%;height:' + (100/size) + '%;"></div>';
         }
     }
 };
