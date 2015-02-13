@@ -2,7 +2,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta content="width=device-width" name="viewport">
-    <link rel="stylesheet" href="css/built.css">
+    <!-- build:css css/built.css -->
+    <link rel="stylesheet" href="./bower_components/pnotify/pnotify.core.css"/>
+    <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./css/goban.css"/>
+    <!-- endbuild -->
 </head>
 <body>
     <div class="header-background"></div>
@@ -108,7 +112,17 @@
         </div>
     </div>
 </script>
-<script src="js/built.js"></script>
+<!-- build:js js/built.js -->
+<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./bower_components/firebase/firebase.js"></script>
+<script src="./bower_components/lodash/lodash.min.js"></script>
+<script src="./bower_components/pnotify/pnotify.core.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/welcome.js"></script>
+<script src="./js/game.js"></script>
+<script src="./js/board.js"></script>
+<script src="./js/fireb.js"></script>
+<!-- endbuild -->
 <script>
     $(function () {
         // Firebase

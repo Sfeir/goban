@@ -26,10 +26,10 @@ Game.prototype.addShareLink = function () {
 };
 
 Game.prototype.getColor = function () {
-    if (this.playerNum == null) {
+    if (this.playerNum === null) {
         return null;
     }
-    return (this.playerNum == 0) ? Game.color.BLACK : Game.color.WHITE;
+    return (this.playerNum === 0) ? Game.color.BLACK : Game.color.WHITE;
 };
 
 Game.prototype.waitToJoin = function () {
@@ -96,7 +96,7 @@ Game.prototype.startPlaying = function (playerNum) {
             y = ids[1];
 
         var color = self.board.get(x, y);
-        if (color != undefined && !_.isEqual(color, self.getColor())) {
+        if (color !== undefined && !_.isEqual(color, self.getColor())) {
             self.board.removeStone(x, y);
             return;
         }

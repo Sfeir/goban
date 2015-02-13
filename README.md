@@ -5,13 +5,21 @@ This is an example of Go game with firebase.
 ## Install
 
 ```batch
-cd dist/
+cd dev/
+npm install
 bower install
 ```
 
 ## Quickstart
 
 ```batch
-cd dist/
-http-server -a 127.0.0.1
+cd dev/
+grunt serve
+```
+
+## Deploy
+
+```batch
+cd dev/
+grunt prod
 ```

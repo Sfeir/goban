@@ -83,7 +83,7 @@ FB.prototype.on = function (path, event) {
     this.firebase.child(path).on(event, function(snap) {
         def.notify(snap);
     }, function (err) {
-        console.error('Access denied attempting to read database ', err, path, event)
+        console.error('Access denied attempting to read database ', err, path, event);
     });
 
     return def.promise();
