@@ -18,7 +18,7 @@ Board.prototype.init = function (size) {
 
 Board.prototype.get = function (x, y) {
     var _ref;
-    return (_ref = this.stones[x]) != null ? _ref[y] : void 0;
+    return (_ref = this.stones[x]) !== null ? _ref[y] : void 0;
 };
 
 Board.prototype.setStone = function (x, y, color) {
@@ -78,8 +78,7 @@ Board.prototype.removeStone = function (x, y) {
 };
 
 Board.prototype.isCoordOnGoban = function (x, y) {
-    return 0 < x && x <= this.size
-        && 0 < y && y <= this.size;
+    return 0 < x && x <= this.size && 0 < y && y <= this.size;
 };
 
 Board.prototype.isColorValid = function (color) {
@@ -92,7 +91,7 @@ Board.prototype.isOkSetStone = function (x, y, color) {
         return false;
     }
 
-    if (this.stones[x][y] != undefined && this.stones[x][y] != color) {
+    if (this.stones[x][y] !== undefined && this.stones[x][y] !== color) {
         new PNotify({ text: 'A stone already exists' });
         return false;
     }
@@ -196,7 +195,7 @@ Board.prototype.generatorSVG = function (size) {
     svg.appendChild(path);
     svg.appendChild(rect);
     boardGo.insertBefore(svg, canvasGoban);
-}
+};
 
 Board.prototype.generateGoban = function (size) {
     $('#container-value').html('').addClass('is-visible').append(this.templateCreate);

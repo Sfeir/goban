@@ -1,1 +1,5 @@
-/dist/bower_components/*
+/dev/bower_components/*
+/dev/node_modules/*
+/dist/*
+
+npm-debug.log
