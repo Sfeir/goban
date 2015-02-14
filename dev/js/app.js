@@ -10,10 +10,10 @@ App.prototype.init = function (url) {
     this.gameId = window.location.search.substring(1);
 
     if (_.isEmpty(this.gameId)) {
-        var welcome = new Welcome();
         this.firebase = new FB(url, null);
+        var welcome = new Welcome(this.firebase);
         welcome.showFormCreateGame();
-        welcome.listGames(this.firebase);
+        welcome.listGames();
         return;
     }
 
