@@ -1,5 +1,6 @@
 var FB = function (url, gameId) {
     this.firebase = new Firebase(url);
+    this.gamesRef = this.firebase.root().child('games');
     this.gameId = gameId;
 };
 
@@ -23,29 +24,29 @@ FB.prototype.newGame = function (size) {
 
 FB.prototype.getGames = function () {
     var def = $.Deferred();
-    this.firebase.child('games').orderByKey().limitToLast(5).once('value', function(snap){
+    this.gamesRef.orderByKey().limitToLast(5).once('value', function(snap){
         def.resolve(snap.val());
     });
     return def.promise();
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.firebase.child('games/' + this.gameId + '/board/' + x + "-" + y).set(color);
+    return this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.firebase.child('games/' + this.gameId + '/board/' + x + "-" + y).remove();
+    return this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).remove();
 };
 
 FB.prototype.setToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
     var self = this;
-    var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
-    var partner = 'games/' + this.gameId + 'player' + partnerNum + '/token';
-    this.firebase.child(player).once('value', function (snap) {
-        self.firebase.child(partner).once('value', function (snapPartner) {
+    var player = this.gameId + '/player' + playerNum + '/token';
+    var partner = this.gameId + 'player' + partnerNum + '/token';
+    this.gamesRef.child(player).once('value', function (snap) {
+        self.gamesRef.child(partner).once('value', function (snapPartner) {
             if (_.isNull(snap.val()) && _.isNull(snapPartner.val())) {
-                self.firebase.child(player).transaction(function () {
+                self.gamesRef.child(player).transaction(function () {
                     return true;
                 });
             }
@@ -55,10 +56,10 @@ FB.prototype.setToken = function (playerNum) {
 
 FB.prototype.switchToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
-    var partner = 'games/' + this.gameId + '/player' + partnerNum + '/token';
-    var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
-    this.firebase.child(player).set({});
-    this.firebase.child(partner).transaction(function () {
+    var partner = this.gameId + '/player' + partnerNum + '/token';
+    var player = this.gameId + '/player' + playerNum + '/token';
+    this.gamesRef.child(player).set({});
+    this.gamesRef.child(partner).transaction(function () {
         return true;
     });
 };
