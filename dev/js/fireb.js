@@ -4,7 +4,7 @@ var FB = function (url, gameId) {
 };
 
 FB.prototype.ref = function () {
-    return this.firebase;
+    return this.firebase.root();
 };
 
 FB.prototype.newGame = function (size) {
@@ -80,7 +80,7 @@ FB.prototype.switchToken = function (playerNum) {
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
-    this.firebase.child(path).on(event, function(snap) {
+    this.ref().child(path).on(event, function(snap) {
         def.notify(snap);
     }, function (err) {
         console.error('Access denied attempting to read database ', err, path, event);
@@ -99,7 +99,7 @@ FB.prototype.on = function (path, event) {
 FB.prototype.once = function(path, event) {
     var def = $.Deferred();
 
-    this.firebase.child(path).once(event, function(snap) {
+    this.ref().child(path).once(event, function(snap) {
         def.resolve(snap);
     }, function(err) {
         console.error('Access denied attempting to read database', err, path, event);
@@ -111,7 +111,7 @@ FB.prototype.once = function(path, event) {
 
 FB.prototype.childWithTransaction = function (path, input) {
     var def = $.Deferred();
-    this.firebase.child(path).transaction(function (value) {
+    this.ref().child(path).transaction(function (value) {
         def.resolve(value);
         if (value === null) {
             return input;
