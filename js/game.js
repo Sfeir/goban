@@ -135,11 +135,11 @@ Game.prototype.presence = function (playerNum, user) {
     if (user) {
         $("#presence")
             .addClass('label-success')
-            .removeClass('label-warning')
+            .removeClass('label-info')
             .text("★ partner online");
     } else {
         $("#presence")
-            .addClass('label-warning')
+            .addClass('label-info')
             .removeClass('label-success')
             .text("☆ partner idle");
     }

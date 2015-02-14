@@ -9,14 +9,14 @@
     <!-- endbuild -->
 </head>
 <body>
-    <div class="header-background"></div>
+<div class="header-background"></div>
 
-    <div class="container">
-        <div class="header row text-center">
-            <h1><a href="/"><img src="img/logo-sfeir.png" class="pull-left"></a> Goban</h1>
-        </div>
-        <div id="container-value"></div>
+<div class="container">
+    <div class="header row text-center">
+        <h1><a href="/"><img src="img/logo-sfeir.png" class="pull-left"></a> Goban</h1>
     </div>
+    <div id="container-value"></div>
+</div>
 
 <script id="template-game" type="text/template">
     <div class="row">
@@ -26,7 +26,7 @@
                     <h3 class="panel-title">
                         Game
                         <span id="player-num"></span>
-                        <span id="presence" class="label label-warning pull-right"></span>
+                        <span id="presence" class="label label-info pull-right"></span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -45,12 +45,16 @@
         <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Game info</h3>
+                    <h3 class="panel-title">Invite someone to play</h3>
                 </div>
                 <div class="panel-body">
-                    Pour inviter quelqu'un à jouer, donnez-lui ce lien :<br>
+                    To invite someone to play, give him this link :<br>
                     <span class="glyphicon glyphicon-link"></span> <a href="#" id="share-link"></a><br>
-                    La première personne qui cliquera sur ce lien jouera avec vous.
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Game info</h3>
                 </div>
                 <table class="table">
                     <tr>
@@ -66,10 +70,8 @@
                         <td>8</td>
                     </tr>
                 </table>
-                <div class="panel-footer">
-                    <a href="/" class="btn btn-block btn-sm btn-link">New game</a>
-                </div>
             </div>
+            <a href="/" class="btn btn-danger btn-block">New game</a>
         </div>
     </div>
 </script>
