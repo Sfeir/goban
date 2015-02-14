@@ -1,8 +1,8 @@
-var Board = function (firebase, size, idGame) {
+var Board = function (firebase, size, gameId) {
     this.templateCreate = _.template($('#template-game').html());
     this.firebase = firebase;
     this.size = parseInt(size);
-    this.idGame = idGame;
+    this.gameId = gameId;
     this.stones = [];
     this.init(this.size);
 };
@@ -31,11 +31,11 @@ Board.prototype.setStone = function (x, y, color) {
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
-        var player = 'games/' + this.idGame + '/player' + playerNum + '/token';
+        var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
         var self = this;
 
-        this.firebase.once(player, 'value').then(function (onlineSnap) {
-            if (!_.isNull(onlineSnap.val())) {
+        this.firebase.once(player, 'value').then(function (snap) {
+            if (!_.isNull(snap.val())) {
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
 

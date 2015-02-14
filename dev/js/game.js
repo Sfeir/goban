@@ -1,8 +1,8 @@
-Game = function (firebase, url, idGame, size) {
+Game = function (firebase, url, gameId, size) {
     this.firebase = firebase;
     this.url = url;
     this.size = size;
-    this.idGame = idGame;
+    this.gameId = gameId;
     this.playingState = Game.PlayingState.Watching;
     this.playerNum = null;
     this.board = null;
@@ -13,7 +13,7 @@ Game.PlayingState = {Watching: 0, Joining: 1, Playing: 2};
 Game.color = {BLACK: "BLACK", WHITE: "WHITE"};
 
 Game.prototype.init = function () {
-    this.board = new Board(this.firebase, this.size, this.idGame);
+    this.board = new Board(this.firebase, this.size, this.gameId);
     this.addShareLink();
     this.waitToJoin();
 };
@@ -36,12 +36,12 @@ Game.prototype.waitToJoin = function () {
     var self = this;
 
     // Listen on 'online' location for player0 and player1.
-    function join(numPlayer) {
-        self.firebase.on('games/' + self.idGame + '/player' + numPlayer + '/online', 'value').progress(function (snapshot) {
-            if (_.isNull(snapshot.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
-                self.tryToJoin(numPlayer);
+    function join(playerNum) {
+        self.firebase.on('games/' + self.gameId + '/player' + playerNum + '/online', 'value').progress(function (snap) {
+            if (_.isNull(snap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
+                self.tryToJoin(playerNum);
             }
-            self.presence(numPlayer, snapshot.val());
+            self.presence(playerNum, snap.val());
         });
     }
 
@@ -59,9 +59,9 @@ Game.prototype.tryToJoin = function (playerNum) {
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.firebase.ref().child('games/' + self.idGame + '/player' + playerNum + '/online').transaction(function (onlineVal) {
-        console.log("player " + playerNum + " tryToJoin transaction ", onlineVal);
-        if (onlineVal === null) {
+    this.firebase.ref().child('games/' + self.gameId + '/player' + playerNum + '/online').transaction(function (snap) {
+        console.log("player " + playerNum + " tryToJoin transaction ", snap);
+        if (snap === null) {
             self.firebase.setToken(playerNum);
             return true; // Try to set online to true
         } else {
@@ -82,7 +82,7 @@ Game.prototype.tryToJoin = function (playerNum) {
  * Once we've joined, enable controlling our player.
  */
 Game.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.firebase.ref().child('games/' + this.idGame + '/player' + playerNum);
+    this.myPlayerRef = this.firebase.ref().child('games/' + this.gameId + '/player' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
@@ -115,14 +115,14 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
-    this.firebase.on('games/' + this.idGame + '/board', 'child_added').progress(function (snapshot) {
-        var coord = snapshot.key().split("-");
-        var stone = snapshot.val();
+    this.firebase.on('games/' + this.gameId + '/board', 'child_added').progress(function (snap) {
+        var coord = snap.key().split("-");
+        var stone = snap.val();
         self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
     });
 
-    this.firebase.on('games/' + this.idGame + '/board', 'child_removed').progress(function (snapshot) {
-        var coord = snapshot.key().split("-");
+    this.firebase.on('games/' + this.gameId + '/board', 'child_removed').progress(function (snap) {
+        var coord = snap.key().split("-");
         self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
     });
 };

@@ -7,9 +7,9 @@ Welcome.prototype.showFormCreateGame = function () {
 };
 
 Welcome.prototype.listGames = function (fb) {
-	var that = this;
+	var self = this;
     fb.getGames().then(function (games) {
-    	that.creatListGames(games);
+    	self.creatListGames(games);
     });
 };
 

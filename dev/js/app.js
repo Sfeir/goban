@@ -7,9 +7,9 @@ var App = function (url) {
  * Initalize the application
  */
 App.prototype.init = function (url) {
-    this.idGame = window.location.search.substring(1);
+    this.gameId = window.location.search.substring(1);
 
-    if (_.isEmpty(this.idGame)) {
+    if (_.isEmpty(this.gameId)) {
         var welcome = new Welcome();
         this.firebase = new FB(url, null);
         welcome.showFormCreateGame();
@@ -17,21 +17,21 @@ App.prototype.init = function (url) {
         return;
     }
 
-    this.firebase = new FB(url, this.idGame);
+    this.firebase = new FB(url, this.gameId);
     var re = new RegExp("size=[0-9]{1,2}");
-    var nbOcc = this.idGame.match(re);
+    var nbOcc = this.gameId.match(re);
 
     if (!_.isNull(nbOcc) && nbOcc.length == 1) {
-        var size = this.idGame.split("=")[1];
-        this.firebase.newIdGame(size).then(function (key) {
+        var size = this.gameId.split("=")[1];
+        this.firebase.newGame(size).then(function (key) {
             $(location).attr('href', "/?" + key);
         });
         return;
     }
 
     var self = this;
-    this.firebase.once('games/' + self.idGame + '/size', 'value').then(function (snap) {
+    this.firebase.once('games/' + self.gameId + '/size', 'value').then(function (snap) {
         var size = snap.val();
-        new Game(self.firebase, url, self.idGame, size);
+        new Game(self.firebase, url, self.gameId, size);
     });
 };

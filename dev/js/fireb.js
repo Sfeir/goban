@@ -1,13 +1,13 @@
-var FB = function (url, idGame) {
+var FB = function (url, gameId) {
     this.firebase = new Firebase(url);
-    this.idGame = idGame;
+    this.gameId = gameId;
 };
 
 FB.prototype.ref = function () {
     return this.firebase;
 };
 
-FB.prototype.newIdGame = function (size) {
+FB.prototype.newGame = function (size) {
     var ref = this.firebase.root();
     var key = ref.push().key();
     var def = $.Deferred();
@@ -30,21 +30,21 @@ FB.prototype.getGames = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.firebase.child('games/' + this.idGame + '/board/' + x + "-" + y).set(color);
+    return this.firebase.child('games/' + this.gameId + '/board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.firebase.child('games/' + this.idGame + '/board/' + x + "-" + y).remove();
+    return this.firebase.child('games/' + this.gameId + '/board/' + x + "-" + y).remove();
 };
 
 FB.prototype.setToken = function (playerNum) {
-    var numOpponent = Math.abs(playerNum - 1);
+    var partnerNum = Math.abs(playerNum - 1);
     var self = this;
-    var player = 'games/' + this.idGame + '/player' + playerNum + '/token';
-    var opponent = 'games/' + this.idGame + 'player' + numOpponent + '/token';
-    this.firebase.child(player).once('value', function (onlineSnap) {
-        self.firebase.child(opponent).once('value', function (onlineSnapOpponent) {
-            if (_.isNull(onlineSnap.val()) && _.isNull(onlineSnapOpponent.val())) {
+    var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
+    var partner = 'games/' + this.gameId + 'player' + partnerNum + '/token';
+    this.firebase.child(player).once('value', function (snap) {
+        self.firebase.child(partner).once('value', function (snapPartner) {
+            if (_.isNull(snap.val()) && _.isNull(snapPartner.val())) {
                 self.firebase.child(player).transaction(function () {
                     return true;
                 });
@@ -54,11 +54,11 @@ FB.prototype.setToken = function (playerNum) {
 };
 
 FB.prototype.switchToken = function (playerNum) {
-    var numOpponent = Math.abs(playerNum - 1);
-    var opponent = 'games/' + this.idGame + '/player' + numOpponent + '/token';
-    var player = 'games/' + this.idGame + '/player' + playerNum + '/token';
+    var partnerNum = Math.abs(playerNum - 1);
+    var partner = 'games/' + this.gameId + '/player' + partnerNum + '/token';
+    var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
     this.firebase.child(player).set({});
-    this.firebase.child(opponent).transaction(function () {
+    this.firebase.child(partner).transaction(function () {
         return true;
     });
 };
