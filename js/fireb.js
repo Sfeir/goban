@@ -24,8 +24,16 @@ FB.prototype.setStone = function (x, y, color) {
     this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
 };
 
-FB.prototype.removeStone = function (x, y) {
-    this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).remove();
+FB.prototype.removeStone = function (x, y, playerNum) {
+    var ref = this.gamesRef.child(this.gameId);
+    ref.child('/board/' + x + "-" + y).remove();
+
+    var path = '/player' + playerNum;
+    this.once('games/' + this.gameId + '/player' + playerNum + '/score', 'value').then(function (snap) {
+        var score = snap.val() === null ? 0 : snap.val();
+        console.log("score : ", score, "playernum", playerNum);
+        ref.child(path).update({score: score + 1});
+    });
 };
 
 FB.prototype.setToken = function (playerNum) {

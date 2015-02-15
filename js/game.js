@@ -49,6 +49,7 @@ Game.prototype.waitToJoin = function () {
     join(1);
 
     this.watchForNewStones();
+    this.watchForNewScore();
 };
 
 Game.prototype.tryToJoin = function (playerNum) {
@@ -97,7 +98,7 @@ Game.prototype.startPlaying = function (playerNum) {
 
         var color = self.board.get(x, y);
         if (color !== undefined && !_.isEqual(color, self.getColor())) {
-            self.board.removeStone(x, y);
+            self.board.removeStone(x, y, playerNum);
             return;
         }
 
@@ -124,6 +125,22 @@ Game.prototype.watchForNewStones = function () {
     this.firebase.on('games/' + this.gameId + '/board', 'child_removed').progress(function (snap) {
         var coord = snap.key().split("-");
         self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
+    });
+};
+
+Game.prototype.watchForNewScore = function () {
+    this.firebase.on('games/' + this.gameId + '/player0/score', 'value').progress(function (snap) {
+        var score = snap.val();
+        if (!_.isNull(score)) {
+            $('#scorePlayer0').text(snap.val());
+        }
+    });
+
+    this.firebase.on('games/' + this.gameId + '/player1/score', 'value').progress(function (snap) {
+        var score = snap.val();
+        if (!_.isNull(score)) {
+            $('#scorePlayer1').text(snap.val());
+        }
     });
 };
 

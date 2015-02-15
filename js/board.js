@@ -63,7 +63,7 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     }
 };
 
-Board.prototype.removeStone = function (x, y) {
+Board.prototype.removeStone = function (x, y, playerNum) {
     if (!this.isCoordOnGoban(x, y)) {
         new PNotify({ text: 'Outside goban' });
         return false;
@@ -74,7 +74,9 @@ Board.prototype.removeStone = function (x, y) {
     }
 
     this.removeClassName(x, y);
-    this.firebase.removeStone(x, y);
+    if (_.isNumber(playerNum)) {
+        this.firebase.removeStone(x, y, playerNum);
+    }
 };
 
 Board.prototype.isCoordOnGoban = function (x, y) {
