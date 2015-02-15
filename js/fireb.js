@@ -9,7 +9,7 @@ FB.prototype.ref = function () {
 };
 
 FB.prototype.newGame = function (size) {
-    return this.gamesRef.push({size: size}).key();
+    return this.gamesRef.push({size: size, startedAt: Firebase.ServerValue.TIMESTAMP}).key();
 };
 
 FB.prototype.getGames = function () {

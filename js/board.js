@@ -42,7 +42,7 @@ Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
                 self.firebase.setStone(x, y, color);
                 self.firebase.switchToken(playerNum);
             } else {
-                new PNotify({ text: 'This is your opponent\'s turn' });
+                toastr['error']('This is your opponent\'s turn ');
             }
         });
     }
@@ -54,10 +54,7 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
         var self = this;
 
         this.firebase.once(player, 'value').then(function () {
-            new PNotify({
-                text: 'You skip your turn',
-                type: "notice"
-            });
+            toastr['success']('You skip your turn');
             self.firebase.switchToken(playerNum);
         });
     }
@@ -65,7 +62,7 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
 
 Board.prototype.removeStone = function (x, y, playerNum) {
     if (!this.isCoordOnGoban(x, y)) {
-        new PNotify({ text: 'Outside goban' });
+        toastr['success']('Outside goban');
         return false;
     }
 
@@ -89,12 +86,12 @@ Board.prototype.isColorValid = function (color) {
 
 Board.prototype.isOkSetStone = function (x, y, color) {
     if (!this.isCoordOnGoban(x, y) || !this.isColorValid(color)) {
-        new PNotify({ text: 'Outside goban or color invalid' });
+        toastr['error']('Outside goban or color invalid');
         return false;
     }
 
     if (this.stones[x][y] !== undefined && this.stones[x][y] !== color) {
-        new PNotify({ text: 'A stone already exists' });
+        toastr['error']('A stone already exists');
         return false;
     }
     return true;

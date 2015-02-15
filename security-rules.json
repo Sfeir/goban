@@ -1,0 +1,29 @@
+{
+    "rules":{
+        ".read":true,
+        ".write":true,
+        "game":{
+            "$gameId":{
+                "size":{
+                    ".validate":"newData.isNumber() && !data.exists()"
+                },
+                "player0":{
+                    "online":{
+                        ".validate":"newData.isBoolean()"
+                    },
+                    "token":{
+                        ".validate":"newData.isBoolean()"
+                    }
+                },
+                "player1":{
+                    "online":{
+                        ".validate":"newData.isBoolean()"
+                    },
+                    "token":{
+                        ".validate":"newData.isBoolean()"
+                    }
+                }
+            }
+        }
+    }
+}
