@@ -3,8 +3,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta content="width=device-width" name="viewport">
     <!-- build:css css/built.css -->
-    <link rel="stylesheet" href="./bower_components/pnotify/pnotify.core.css"/>
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./bower_components/toastr/toastr.min.css"/>
     <link rel="stylesheet" href="./css/goban.css"/>
     <!-- endbuild -->
 </head>
@@ -118,7 +118,7 @@
 <script src="./bower_components/director/build/director.min.js"></script>
 <script src="./bower_components/firebase/firebase.js"></script>
 <script src="./bower_components/lodash/lodash.min.js"></script>
-<script src="./bower_components/pnotify/pnotify.core.js"></script>
+<script src="./bower_components/toastr/toastr.min.js"></script>
 <script src="./js/app.js"></script>
 <script src="./js/welcome.js"></script>
 <script src="./js/game.js"></script>
@@ -128,14 +128,19 @@
 <!-- endbuild -->
 <script>
     $(function () {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300"
+        };
+
         // Firebase
         new App('https://goban.firebaseio.com/');
-
-        // Settings for PNotify
-        PNotify.prototype.options.styling = "fontawesome";
-        PNotify.prototype.options.opacity = ".9";
-        PNotify.prototype.options.type = "error";
-        PNotify.prototype.options.delay = "4000";
     });
 </script>
 </body>

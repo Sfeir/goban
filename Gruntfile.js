@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                         './bower_components/director/build/director.min.js',
                         './bower_components/firebase/firebase.js',
                         './bower_components/lodash/lodash.min.js',
-                        './bower_components/pnotify/pnotify.core.js',
+                        './bower_components/toastr/toastr.min.js',
                         './js/app.js',
                         './js/welcome.js',
                         './js/game.js',
@@ -67,8 +67,8 @@ module.exports = function (grunt) {
             target: {
                 files: {
                     './dist/css/built.css': [
-                        './bower_components/pnotify/pnotify.core.css',
                         './bower_components/bootstrap/dist/css/bootstrap.min.css',
+                        './bower_components/toastr/toastr.min.css',
                         './css/goban.css'
                     ]
                 }
