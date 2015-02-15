@@ -1,8 +1,8 @@
-var Board = function (firebase, size, idGame) {
+var Board = function (firebase, size, gameId) {
     this.templateCreate = _.template($('#template-game').html());
     this.firebase = firebase;
     this.size = parseInt(size);
-    this.idGame = idGame;
+    this.gameId = gameId;
     this.stones = [];
     this.init(this.size);
 };
@@ -31,11 +31,11 @@ Board.prototype.setStone = function (x, y, color) {
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
-        var player = 'games/' + this.idGame + '/player' + playerNum + '/token';
+        var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
         var self = this;
 
-        this.firebase.once(player, 'value').then(function (onlineSnap) {
-            if (!_.isNull(onlineSnap.val())) {
+        this.firebase.once(player, 'value').then(function (snap) {
+            if (!_.isNull(snap.val())) {
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
 
@@ -63,7 +63,7 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     }
 };
 
-Board.prototype.removeStone = function (x, y) {
+Board.prototype.removeStone = function (x, y, playerNum) {
     if (!this.isCoordOnGoban(x, y)) {
         new PNotify({ text: 'Outside goban' });
         return false;
@@ -74,7 +74,9 @@ Board.prototype.removeStone = function (x, y) {
     }
 
     this.removeClassName(x, y);
-    this.firebase.removeStone(x, y);
+    if (_.isNumber(playerNum)) {
+        this.firebase.removeStone(x, y, playerNum);
+    }
 };
 
 Board.prototype.isCoordOnGoban = function (x, y) {
@@ -136,60 +138,60 @@ Board.prototype.generatorSVG = function (size) {
     var svgns = 'http://www.w3.org/2000/svg';
 
     var svg = document.createElementNS(svgns, 'svg');
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        svg.setAttribute('viewBox', '0 0 100 100');
-        svg.setAttribute('preserveAspectRatio', 'none');
-        svg.setAttribute('style', 'padding:' + (100/((size-1)*2)) + '%;');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('style', 'padding:' + (100 / ((size - 1) * 2)) + '%;');
 
     var defs = document.createElementNS(svgns, "defs");
 
     var path = document.createElementNS(svgns, "path");
-        path.setAttribute('d', 'M 100 0 L 100 100 0 100');
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', 'black');
-        path.setAttribute('stroke-width', '.4');
+    path.setAttribute('d', 'M 100 0 L 100 100 0 100');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'black');
+    path.setAttribute('stroke-width', '.4');
 
     var pattern = document.createElementNS(svgns, "pattern");
-        pattern.setAttribute('id', 'grid');
-        pattern.setAttribute('width', 100/(size-1) + '%');
-        pattern.setAttribute('height', 100/(size-1) + '%');
-        pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('id', 'grid');
+    pattern.setAttribute('width', 100 / (size - 1) + '%');
+    pattern.setAttribute('height', 100 / (size - 1) + '%');
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
 
     var patternPath = document.createElementNS(svgns, "path");
-        patternPath.setAttribute('d', 'M 30 0 L 0 0 0 30');
-        patternPath.setAttribute('fill', 'none');
-        patternPath.setAttribute('stroke', 'black');
-        patternPath.setAttribute('stroke-width', '.8');
+    patternPath.setAttribute('d', 'M 30 0 L 0 0 0 30');
+    patternPath.setAttribute('fill', 'none');
+    patternPath.setAttribute('stroke', 'black');
+    patternPath.setAttribute('stroke-width', '.8');
 
     pattern.appendChild(patternPath);
     defs.appendChild(pattern);
 
     var hoshi9X = ['25.2%', '25.2%', '75.2%', '75.2%'];
     var hoshi9Y = ['25.2%', '75.2%', '25.2%', '75.2%'];
-    var space1 = ((Math.round(((100/(size-1))*3) * 100) / 100)+ 0.2) + '%';
-    var space2 = ((Math.round(((100/(size-1))*((size-1)/2)) * 100) / 100)+ 0.2) + '%';
-    var space3 = ((Math.round(((100/(size-1))*(size-4)) * 100) / 100) + 0.2) + '%';
+    var space1 = ((Math.round(((100 / (size - 1)) * 3) * 100) / 100) + 0.2) + '%';
+    var space2 = ((Math.round(((100 / (size - 1)) * ((size - 1) / 2)) * 100) / 100) + 0.2) + '%';
+    var space3 = ((Math.round(((100 / (size - 1)) * (size - 4)) * 100) / 100) + 0.2) + '%';
     var hoshiX = [space1, space1, space1, space2, space2, space2, space3, space3, space3];
     var hoshiY = [space1, space2, space3, space1, space2, space3, space1, space2, space3];
 
-    for (var i=0;i < ((size > 9) ? 9 : 4);++i) {
+    for (var i = 0; i < ((size > 9) ? 9 : 4); ++i) {
         // Boucle 4x pour un goban de 9
         // Boucle 9x pour un goban > 9
         var circle = document.createElementNS(svgns, "circle");
-            circle.setAttribute('fill', 'black');
-            circle.setAttribute('stroke', 'none');
-            circle.setAttribute('cx', (size > 9) ? hoshiX[i] : hoshi9X[i]);
-            circle.setAttribute('cy', (size > 9) ? hoshiY[i] : hoshi9Y[i]);
-            circle.setAttribute('r', '1');
+        circle.setAttribute('fill', 'black');
+        circle.setAttribute('stroke', 'none');
+        circle.setAttribute('cx', (size > 9) ? hoshiX[i] : hoshi9X[i]);
+        circle.setAttribute('cy', (size > 9) ? hoshiY[i] : hoshi9Y[i]);
+        circle.setAttribute('r', '1');
 
         svg.appendChild(circle);
     }
 
     var rect = document.createElementNS(svgns, "rect");
-        rect.setAttribute('width', '100%');
-        rect.setAttribute('height', '100%');
-        rect.setAttribute('fill', 'url(#grid)');
+    rect.setAttribute('width', '100%');
+    rect.setAttribute('height', '100%');
+    rect.setAttribute('fill', 'url(#grid)');
 
     svg.appendChild(defs);
     svg.appendChild(path);
@@ -249,7 +251,7 @@ Board.prototype.generateGoban = function (size) {
                     attrClass.push("hoshi");
                 }
             }
-            r.innerHTML = r.innerHTML + '<div id="' + col + '-' + (this.size - row + 1) + '" class="cell ' + attrClass.join(' ') + '" style="width:' + (100/size) + '%;height:' + (100/size) + '%;"></div>';
+            r.innerHTML = r.innerHTML + '<div id="' + col + '-' + (this.size - row + 1) + '" class="cell ' + attrClass.join(' ') + '" style="width:' + (100 / size) + '%;height:' + (100 / size) + '%;"></div>';
         }
     }
 };
