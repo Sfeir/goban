@@ -21,11 +21,11 @@ FB.prototype.getGames = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    return this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
+    this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
 };
 
 FB.prototype.removeStone = function (x, y) {
-    return this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).remove();
+    this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).remove();
 };
 
 FB.prototype.setToken = function (playerNum) {
