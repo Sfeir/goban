@@ -14,7 +14,7 @@ FB.prototype.newGame = function (size) {
 
 FB.prototype.getGames = function () {
     var def = $.Deferred();
-    this.gamesRef.orderByKey().limitToLast(5).once('value', function(snap){
+    this.gamesRef.orderByKey().limitToLast(5).once('value', function (snap) {
         def.resolve(snap.val());
     });
     return def.promise();
@@ -79,7 +79,7 @@ FB.prototype.switchToken = function (playerNum) {
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).on(event, function(snap) {
+    this.ref().child(path).on(event, function (snap) {
         def.notify(snap);
     }, function (err) {
         console.error('Access denied attempting to read database ', err, path, event);
@@ -95,12 +95,12 @@ FB.prototype.on = function (path, event) {
  * @param event
  * @returns {jQuery.Deferred}
  */
-FB.prototype.once = function(path, event) {
+FB.prototype.once = function (path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).once(event, function(snap) {
+    this.ref().child(path).once(event, function (snap) {
         def.resolve(snap);
-    }, function(err) {
+    }, function (err) {
         console.error('Access denied attempting to read database', err, path, event);
         def.reject(err);
     });
