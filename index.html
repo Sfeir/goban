@@ -84,23 +84,21 @@
                     <h3 class="panel-title">Create new game</h3>
                 </div>
                 <div class="panel-body text-center">
-                    <form action="/" method="get">
-                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                            <button class="btn-reset" type="submit" name="size" value="9">
-                                <img src="img/goban9.png" height="200"><br> 9x9
-                            </button>
-                        </div>
-                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                            <button class="btn-reset text-center" type="submit" name="size" value="13">
-                                <img src="img/goban13.png" height="200"><br> 13x13
-                            </button>
-                        </div>
-                        <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                            <button class="btn-reset" type="submit" name="size" value="19">
-                                <img src="img/goban19.png" height="200"><br> 19x19
-                            </button>
-                        </div>
-                    </form>
+                    <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                        <button class="btn-reset welcome-game-size" data-size="9">
+                            <img src="img/goban9.png" height="200"><br> 9x9
+                        </button>
+                    </div>
+                    <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                        <button class="btn-reset welcome-game-size" data-size="13">
+                            <img src="img/goban13.png" height="200"><br> 13x13
+                        </button>
+                    </div>
+                    <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                        <button class="btn-reset welcome-game-size" data-size="19">
+                            <img src="img/goban19.png" height="200"><br> 19x19
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,6 +122,7 @@
 <script src="./js/game.js"></script>
 <script src="./js/board.js"></script>
 <script src="./js/fireb.js"></script>
+<script src="./js/utils.js"></script>
 <!-- endbuild -->
 <script>
     $(function () {

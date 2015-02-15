@@ -9,17 +9,7 @@ FB.prototype.ref = function () {
 };
 
 FB.prototype.newGame = function (size) {
-    var ref = this.firebase.root();
-    var key = ref.push().key();
-    var def = $.Deferred();
-    ref.child('games/' + key).set({size: size}, function(error) {
-        if (error) {
-            def.reject(error);
-        } else {
-            def.resolve(key);
-        }
-    });
-    return def.promise();
+    return this.gamesRef.push({size: size}).key();
 };
 
 FB.prototype.getGames = function () {

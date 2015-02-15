@@ -7,31 +7,32 @@ var App = function (url) {
  * Initalize the application
  */
 App.prototype.init = function (url) {
-    this.gameId = window.location.search.substring(1);
+    var gameId = window.location.hash.substring(1);
 
-    if (_.isEmpty(this.gameId)) {
+    if (!_.isEmpty(gameId) && Utils.checkFirebaseId(gameId)) {
+        this.createGame(url, gameId);
+    } else {
+        window.location.replace("/#");
         this.firebase = new FB(url, null);
         var welcome = new Welcome(this.firebase);
-        welcome.showFormCreateGame();
         welcome.listGames();
-        return;
-    }
 
-    this.firebase = new FB(url, this.gameId);
-    var re = new RegExp("size=[0-9]{1,2}");
-    var nbOcc = this.gameId.match(re);
-
-    if (!_.isNull(nbOcc) && nbOcc.length == 1) {
-        var size = this.gameId.split("=")[1];
-        this.firebase.newGame(size).then(function (key) {
-            $(location).attr('href', "/?" + key);
+        var self = this;
+        welcome.watchNewGame().then(function (size) {
+            var gameId = self.firebase.newGame(size);
+            self.createGame(url, gameId);
         });
-        return;
     }
+};
 
+App.prototype.createGame = function (url, gameId) {
+    window.location.replace("/#" + gameId);
+    this.firebase = new FB(url, gameId);
     var self = this;
-    this.firebase.once('games/' + self.gameId + '/size', 'value').then(function (snap) {
+    this.firebase.once('games/' + gameId + '/size', 'value').then(function (snap) {
         var size = snap.val();
-        new Game(self.firebase, url, self.gameId, size);
+        console.debug("new Game [size : ", size, ", gameId : ", gameId, "]");
+
+        new Game(self.firebase, url, gameId, size);
     });
 };

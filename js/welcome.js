@@ -1,10 +1,17 @@
 var Welcome = function (firebase) {
     this.fb = firebase;
+    this.init();
+};
+
+Welcome.prototype.init = function () {
+    var self = this;
+    self.showFormCreateGame();
 };
 
 Welcome.prototype.showFormCreateGame = function () {
     this.templateCreate = _.template($('#template-create').html());
     $('#container-value').html(this.templateCreate);
+    this.watchNewGame();
 };
 
 Welcome.prototype.listGames = function () {
@@ -26,4 +33,14 @@ Welcome.prototype.creatListGames = function (games) {
         html = html.join('');
         $listGame.prepend(html);
     });
+};
+
+Welcome.prototype.watchNewGame = function () {
+    var def = $.Deferred();
+
+    $(".welcome-game-size").on("click", function () {
+        var provider = $(this).data("size");
+        def.resolve(provider);
+    });
+    return def.promise();
 };
