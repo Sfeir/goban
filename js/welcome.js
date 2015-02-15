@@ -24,11 +24,21 @@ Welcome.prototype.listGames = function () {
 Welcome.prototype.creatListGames = function (games) {
     var $listGame = $('#list-games');
 
-    $.each(games, function (k) {
+    $.each(games, function (k, v) {
+        var scorePlayer0 = 0;
+        if (_.has(v, 'player1') && _.has(v.player1, 'score')) {
+            scorePlayer0 = v.player1.score;
+        }
+
+        var scorePlayer1 = 0;
+        if (_.has(v, 'player0') && _.has(v.player0, 'score')) {
+            scorePlayer1 = v.player1.score;
+        }
+
         var html = [];
         html.push('<a href="' + window.location.href + '?' + k + '" class="list-group-item">');
         html.push('<h4 class="list-group-item-heading">Game : ' + k + '</h4>');
-        html.push('<p class="list-group-item-text"><b>Score :</b> - </p>');
+        html.push('<p class="list-group-item-text"><b>Score :</b> ' + scorePlayer0 + ' - ' + scorePlayer1 + '</p>');
         html.push('</a>');
         html = html.join('');
         $listGame.prepend(html);
