@@ -48,6 +48,7 @@ module.exports = function (grunt) {
                 files: {
                     './dist/js/built.js': [
                         './bower_components/jquery/dist/jquery.js',
+                        './bower_components/bootstrap/dist/js/bootstrap.min.js',
                         './bower_components/director/build/director.min.js',
                         './bower_components/firebase/firebase.js',
                         './bower_components/lodash/lodash.min.js',
@@ -79,7 +80,8 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {expand: true, src: ['./*.html', './*.jpg', './*.png', './*.ico', './.htaccess'], dest: './dist/'},
-                    {expand: true, src: ['./img/**'], dest: './dist/'}
+                    {expand: true, src: ['./img/**'], dest: './dist/'},
+                    {expand: true, src: ['./bower_components/bootstrap/dist/fonts/**'], dest: './dist/fonts/', filter: 'isFile', flatten: true}
                 ]
             }
         },
@@ -113,4 +115,4 @@ module.exports = function (grunt) {
 
     grunt.registerTask('prod', ['jshint', 'uglify', 'cssmin', 'copy', 'usemin']);
 
-}
+};
