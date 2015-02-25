@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                     './dist/js/built.js': [
                         './bower_components/jquery/dist/jquery.js',
                         './bower_components/bootstrap/dist/js/bootstrap.min.js',
-                        './bower_components/director/build/director.min.js',
+                        './bower_components/routie/dist/routie.min.js',
                         './bower_components/firebase/firebase.js',
                         './bower_components/lodash/lodash.min.js',
                         './bower_components/toastr/toastr.min.js',

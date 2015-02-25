@@ -9,22 +9,19 @@ var App = function (url) {
  */
 App.prototype.init = function (url) {
     var self = this;
-    var routes = {
-        '/game/:gameId': function (gameId) {
-            if (!Utils.checkFirebaseId(gameId)) {
-                window.location.replace('/#/');
-            } else {
-                self.createGame(url, gameId);
-            }
-        },
-        '/': function () {
-            var welcome = new Welcome(self.firebase);
-            welcome.listGames();
-            welcome.watchNewGame();
+    routie('/game/:gameId', function(gameId) {
+        if (!Utils.checkFirebaseId(gameId)) {
+            window.location.replace('/#/');
+        } else {
+            self.createGame(url, gameId);
         }
-    };
-    var router = Router(routes);
-    router.init('/');
+    });
+    routie('*', function() {
+        console.log("app ", self.firebase);
+        var welcome = new Welcome(self.firebase);
+        welcome.listGames();
+        welcome.watchNewGame();
+    });
 
     this.watchForSignOut();
 };
