@@ -35,6 +35,21 @@
         margin-top: 5px;
     }
 
+.navbar-brand img {
+    width: 80px;
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 800px;
+    }
+
+    .navbar-collapse a {
+        font-size: 15px;
+        margin-top: 2px;
+    }
+}
+
 /* ==========================================================================
    New game view
    ========================================================================== */
@@ -49,9 +64,9 @@
         margin-bottom: 20px;
     }
 
-    .welcome-game-size img {
-        height:200px
-    }
+.welcome-game-size img {
+    height: 150px
+}
 
 /* ==========================================================================
    Game view
