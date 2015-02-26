@@ -1,6 +1,6 @@
 var Board = function (firebase, size, gameId) {
     this.templateCreate = _.template($('#template-game').html());
-    this.firebase = firebase;
+    this.fb = firebase;
     this.size = parseInt(size);
     this.gameId = gameId;
     this.stones = [];
@@ -31,16 +31,16 @@ Board.prototype.setStone = function (x, y, color) {
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
-        var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
         var self = this;
+        var player = 'games/' + this.gameId + '/players/' + playerNum + '/token';
 
-        this.firebase.once(player, 'value').then(function (snap) {
+        this.fb.once(player, 'value').then(function (snap) {
             if (!_.isNull(snap.val())) {
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
 
-                self.firebase.setStone(x, y, color).then(function () {
-                    self.firebase.switchToken(playerNum);
+                self.fb.setStone(x, y, color).then(function () {
+                    self.fb.switchToken(playerNum);
                 }, function () {
                     delete self.stones[x][y];
                 });
@@ -53,12 +53,12 @@ Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
 
 Board.prototype.skipTurnFirebase = function (playerNum) {
     if (!_.isNull(playerNum)) {
-        var player = 'player' + playerNum + '/token';
+        var player = 'players/' + playerNum + '/token';
         var self = this;
 
-        this.firebase.once(player, 'value').then(function () {
+        this.fb.once(player, 'value').then(function () {
             toastr.success('You skip your turn');
-            self.firebase.switchToken(playerNum);
+            self.fb.switchToken(playerNum);
         });
     }
 };
@@ -75,7 +75,7 @@ Board.prototype.removeStone = function (x, y, playerNum) {
 
     this.removeClassName(x, y);
     if (_.isNumber(playerNum)) {
-        this.firebase.removeStone(x, y, playerNum);
+        this.fb.removeStone(x, y, playerNum);
     }
 };
 

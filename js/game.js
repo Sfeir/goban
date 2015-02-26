@@ -50,8 +50,9 @@ Game.prototype.waitToJoin = function () {
 
     // Listen on 'online' location for player0 and player1.
     function join(playerNum) {
-        self.fb.on('games/' + self.gameId + '/player' + playerNum + '/online', 'value').progress(function (snap) {
+        self.fb.on('games/' + self.gameId + '/players/' + playerNum + '/online', 'value').progress(function (snap) {
             if (_.isNull(snap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
+                console.log("waitToJoin", playerNum);
                 self.tryToJoin(playerNum);
             }
             self.presence(playerNum, snap.val());
@@ -77,7 +78,7 @@ Game.prototype.tryToJoin = function (playerNum) {
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.fb.ref().child('games/' + self.gameId + '/player' + playerNum + '/online').transaction(function (snap) {
+    this.fb.ref().child('games/' + self.gameId + '/players/' + playerNum + '/online').transaction(function (snap) {
         console.log("player " + playerNum + " tryToJoin transaction ", snap);
         if (snap === null) {
             self.fb.setToken(playerNum);
@@ -100,7 +101,7 @@ Game.prototype.tryToJoin = function (playerNum) {
  * Once we've joined, enable controlling our player.
  */
 Game.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.fb.ref().child('games/' + this.gameId + '/player' + playerNum);
+    this.myPlayerRef = this.fb.ref().child('games/' + this.gameId + '/players/' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
@@ -133,27 +134,27 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
-    this.fb.on('games/' + this.gameId + '/board', 'child_added').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/goban', 'child_added').progress(function (snap) {
         var coord = snap.key().split("-");
         var stone = snap.val();
         self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
     });
 
-    this.fb.on('games/' + this.gameId + '/board', 'child_removed').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/goban', 'child_removed').progress(function (snap) {
         var coord = snap.key().split("-");
         self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
     });
 };
 
 Game.prototype.watchForNewScore = function () {
-    this.fb.on('games/' + this.gameId + '/player0/score', 'value').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/players/0/score', 'value').progress(function (snap) {
         var score = snap.val();
         if (!_.isNull(score)) {
             $('#scorePlayer0').text(snap.val());
         }
     });
 
-    this.fb.on('games/' + this.gameId + '/player1/score', 'value').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/players/1/score', 'value').progress(function (snap) {
         var score = snap.val();
         if (!_.isNull(score)) {
             $('#scorePlayer1').text(snap.val());

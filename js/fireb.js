@@ -1,11 +1,11 @@
 var FB = function (url, gameId) {
-    this.firebase = new Firebase(url);
-    this.gamesRef = this.firebase.root().child('games');
+    this.fb = new Firebase(url);
+    this.gamesRef = this.fb.root().child('games');
     this.gameId = gameId;
 };
 
 FB.prototype.ref = function () {
-    return this.firebase.root();
+    return this.fb.root();
 };
 
 FB.prototype.newGame = function (size) {
@@ -21,7 +21,7 @@ FB.prototype.getGames = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    var gobanRef = this.gamesRef.child(this.gameId + '/board/' + x + "-" + y);
+    var gobanRef = this.gamesRef.child(this.gameId + '/goban/' + x + "-" + y);
 
     return $.Deferred(function (def) {
         gobanRef.set(color, function (error) {
@@ -36,12 +36,11 @@ FB.prototype.setStone = function (x, y, color) {
 
 FB.prototype.removeStone = function (x, y, playerNum) {
     var ref = this.gamesRef.child(this.gameId);
-    ref.child('/board/' + x + "-" + y).remove();
+    ref.child('/goban/' + x + "-" + y).remove();
 
-    var path = '/player' + playerNum;
-    this.once('games/' + this.gameId + '/player' + playerNum + '/score', 'value').then(function (snap) {
-        var score = snap.val() === null ? 0 : snap.val();
-        console.log("score : ", score, "playernum", playerNum);
+    var path = '/players/' + playerNum;
+    this.once('games/' + this.gameId + path + '/score', 'value').then(function (snap) {
+        var score = (snap.val() === null) ? 0 : snap.val();
         ref.child(path).update({score: score + 1});
     });
 };
@@ -49,8 +48,8 @@ FB.prototype.removeStone = function (x, y, playerNum) {
 FB.prototype.setToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
     var self = this;
-    var player = this.gameId + '/player' + playerNum + '/token';
-    var partner = this.gameId + 'player' + partnerNum + '/token';
+    var player = this.gameId + '/players/' + playerNum + '/token';
+    var partner = this.gameId + 'players/' + partnerNum + '/token';
     this.gamesRef.child(player).once('value', function (snap) {
         self.gamesRef.child(partner).once('value', function (snapPartner) {
             if (_.isNull(snap.val()) && _.isNull(snapPartner.val())) {
@@ -64,8 +63,8 @@ FB.prototype.setToken = function (playerNum) {
 
 FB.prototype.switchToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
-    var partner = this.gameId + '/player' + partnerNum + '/token';
-    var player = this.gameId + '/player' + playerNum + '/token';
+    var partner = this.gameId + '/players/' + partnerNum + '/token';
+    var player = this.gameId + '/players/' + playerNum + '/token';
     this.gamesRef.child(player).set({});
     this.gamesRef.child(partner).transaction(function () {
         return true;

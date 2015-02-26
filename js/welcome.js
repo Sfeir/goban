@@ -1,6 +1,5 @@
 var Welcome = function (firebase) {
     this.fb = firebase;
-    this.oauth = new Oauth(firebase);
 
     this.templateCreate = _.template($('#template-create').html());
     $('#container-value').html(this.templateCreate);
@@ -15,7 +14,6 @@ var Welcome = function (firebase) {
 
 Welcome.prototype.init = function () {
     var self = this;
-
     this.fb.ref().onAuth(function (authData) {
         if (authData) {
             self.$welcomeLogin.addClass('is-hidden');
@@ -25,6 +23,7 @@ Welcome.prototype.init = function () {
             self.$welcomeNewGame.addClass('is-hidden');
         }
     });
+    this.listGames();
 };
 
 Welcome.prototype.listGames = function () {
@@ -33,12 +32,12 @@ Welcome.prototype.listGames = function () {
         var html = [];
         $.each(games, function (k, v) {
             var scorePlayer0 = 0;
-            if (_.has(v, 'player1') && _.has(v.player1, 'score')) {
+            if (_.has(v, 'players/1') && _.has(v.player1, 'score')) {
                 scorePlayer0 = v.player1.score;
             }
 
             var scorePlayer1 = 0;
-            if (_.has(v, 'player0') && _.has(v.player0, 'score')) {
+            if (_.has(v, 'players/0') && _.has(v.player0, 'score')) {
                 scorePlayer1 = v.player1.score;
             }
 

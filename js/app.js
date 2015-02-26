@@ -1,5 +1,5 @@
 var App = function (url) {
-    this.firebase = new FB(url, null);
+    this.fb = new FB(url, null);
     this.$signOut = $('#sign-out');
     this.init(url);
 };
@@ -17,9 +17,7 @@ App.prototype.init = function (url) {
         }
     });
     routie('*', function() {
-        console.log("app ", self.firebase);
-        var welcome = new Welcome(self.firebase);
-        welcome.listGames();
+        var welcome = new Welcome(self.fb);
         welcome.watchNewGame();
     });
 
@@ -27,25 +25,26 @@ App.prototype.init = function (url) {
 };
 
 App.prototype.createGame = function (url, gameId) {
-    this.firebase = new FB(url, gameId);
+    this.fb = new FB(url, gameId);
     var self = this;
-    this.firebase.once('games/' + gameId + '/size', 'value').then(function (snap) {
+    this.fb.once('games/' + gameId + '/size', 'value').then(function (snap) {
         var size = snap.val();
         console.debug('new Game [size : ', size, ', gameId : ', gameId, ']');
 
-        new Game(self.firebase, url, gameId, size);
+        new Game(self.fb, url, gameId, size);
     });
 };
 
 App.prototype.watchForSignOut = function () {
     var self = this;
     $('#sign-out').on("click", function () {
-        self.firebase.ref().unauth();
+        self.fb.ref().unauth();
     });
 
     $(".welcome-login-btn").on("click", function () {
         var provider = $(this).data("provider");
-        self.firebase.ref().authWithOAuthPopup(provider, function (error, authData) {
+        self.fb.ref().authWithOAuthPopup(provider, function (error, authData) {
+            console.log(authData);
             if (error) {
                 toastr.error('Login Failed! : <br>' + error.message);
             }
