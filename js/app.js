@@ -1,6 +1,7 @@
 var App = function (url) {
     this.fb = new FB(url, null);
     this.$signOut = $('#sign-out');
+    this.gameId = null;
     this.init(url);
 };
 
@@ -12,11 +13,13 @@ App.prototype.init = function (url) {
     routie('/game/:gameId', function(gameId) {
         if (!Utils.checkFirebaseId(gameId)) {
             window.location.replace('/#/');
-        } else {
+        } else if (!_.isEqual(self.gameId, gameId)) {
             self.createGame(url, gameId);
+            self.gameId = gameId;
         }
     });
     routie('*', function() {
+        self.gameId = null;
         var welcome = new Welcome(self.fb);
         welcome.watchNewGame();
     });
