@@ -1,5 +1,5 @@
 Game = function (firebase, url, gameId, size) {
-    this.firebase = firebase;
+    this.fb = firebase;
     this.url = url;
     this.size = size;
     this.gameId = gameId;
@@ -13,9 +13,22 @@ Game.PlayingState = {Watching: 0, Joining: 1, Playing: 2};
 Game.color = {BLACK: "BLACK", WHITE: "WHITE"};
 
 Game.prototype.init = function () {
-    this.board = new Board(this.firebase, this.size, this.gameId);
+    this.board = new Board(this.fb, this.size, this.gameId);
     this.addShareLink();
     this.waitToJoin();
+
+    var $gameAlertToplay = $('#game-alert-toplay');
+    var $welcomeLogin = $('#welcome-login');
+
+    this.fb.ref().onAuth(function (authData) {
+        if (authData) {
+            $gameAlertToplay.addClass('is-hidden');
+            $welcomeLogin.addClass('is-hidden');
+        } else {
+            $gameAlertToplay.removeClass('is-hidden');
+            $welcomeLogin.removeClass('is-hidden');
+        }
+    });
 };
 
 Game.prototype.addShareLink = function () {
@@ -37,7 +50,7 @@ Game.prototype.waitToJoin = function () {
 
     // Listen on 'online' location for player0 and player1.
     function join(playerNum) {
-        self.firebase.on('games/' + self.gameId + '/player' + playerNum + '/online', 'value').progress(function (snap) {
+        self.fb.on('games/' + self.gameId + '/player' + playerNum + '/online', 'value').progress(function (snap) {
             if (_.isNull(snap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
                 self.tryToJoin(playerNum);
             }
@@ -45,8 +58,12 @@ Game.prototype.waitToJoin = function () {
         });
     }
 
-    join(0);
-    join(1);
+    this.fb.ref().onAuth(function (authData) {
+        if (authData) {
+            join(0);
+            join(1);
+        }
+    });
 
     this.watchForNewStones();
     this.watchForNewScore();
@@ -60,10 +77,10 @@ Game.prototype.tryToJoin = function (playerNum) {
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.firebase.ref().child('games/' + self.gameId + '/player' + playerNum + '/online').transaction(function (snap) {
+    this.fb.ref().child('games/' + self.gameId + '/player' + playerNum + '/online').transaction(function (snap) {
         console.log("player " + playerNum + " tryToJoin transaction ", snap);
         if (snap === null) {
-            self.firebase.setToken(playerNum);
+            self.fb.setToken(playerNum);
             return true; // Try to set online to true
         } else {
             return; // Somebody must have beat us.  Abort the transaction.
@@ -83,7 +100,7 @@ Game.prototype.tryToJoin = function (playerNum) {
  * Once we've joined, enable controlling our player.
  */
 Game.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.firebase.ref().child('games/' + this.gameId + '/player' + playerNum);
+    this.myPlayerRef = this.fb.ref().child('games/' + this.gameId + '/player' + playerNum);
 
     // Clear our 'online' status when we disconnect so somebody else can join.
     this.myPlayerRef.child('online').onDisconnect().remove();
@@ -116,27 +133,27 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
-    this.firebase.on('games/' + this.gameId + '/board', 'child_added').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/board', 'child_added').progress(function (snap) {
         var coord = snap.key().split("-");
         var stone = snap.val();
         self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
     });
 
-    this.firebase.on('games/' + this.gameId + '/board', 'child_removed').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/board', 'child_removed').progress(function (snap) {
         var coord = snap.key().split("-");
         self.board.removeStone(parseInt(coord[0]), parseInt(coord[1]));
     });
 };
 
 Game.prototype.watchForNewScore = function () {
-    this.firebase.on('games/' + this.gameId + '/player0/score', 'value').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/player0/score', 'value').progress(function (snap) {
         var score = snap.val();
         if (!_.isNull(score)) {
             $('#scorePlayer0').text(snap.val());
         }
     });
 
-    this.firebase.on('games/' + this.gameId + '/player1/score', 'value').progress(function (snap) {
+    this.fb.on('games/' + this.gameId + '/player1/score', 'value').progress(function (snap) {
         var score = snap.val();
         if (!_.isNull(score)) {
             $('#scorePlayer1').text(snap.val());

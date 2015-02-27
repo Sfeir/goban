@@ -39,8 +39,11 @@ Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
 
-                self.firebase.setStone(x, y, color);
-                self.firebase.switchToken(playerNum);
+                self.firebase.setStone(x, y, color).then(function () {
+                    self.firebase.switchToken(playerNum);
+                }, function () {
+                    delete self.stones[x][y];
+                });
             } else {
                 toastr.error('This is your opponent\'s turn ');
             }

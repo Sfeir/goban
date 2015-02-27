@@ -21,7 +21,17 @@ FB.prototype.getGames = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
+    var gobanRef = this.gamesRef.child(this.gameId + '/board/' + x + "-" + y);
+
+    return $.Deferred(function (def) {
+        gobanRef.set(color, function (error) {
+            if (error) {
+                def.reject(error);
+            } else {
+                def.resolve(true);
+            }
+        });
+    });
 };
 
 FB.prototype.removeStone = function (x, y, playerNum) {

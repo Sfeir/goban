@@ -1,5 +1,6 @@
 var App = function (url) {
-    this.firebase = null;
+    this.firebase = new FB(url, null);
+    this.$signOut = $('#sign-out');
     this.init(url);
 };
 
@@ -9,7 +10,7 @@ var App = function (url) {
 App.prototype.init = function (url) {
     var self = this;
     var routes = {
-        '/:gameId': function (gameId) {
+        '/game/:gameId': function (gameId) {
             if (!Utils.checkFirebaseId(gameId)) {
                 window.location.replace('/#/');
             } else {
@@ -17,18 +18,15 @@ App.prototype.init = function (url) {
             }
         },
         '/': function () {
-            self.firebase = new FB(url, null);
             var welcome = new Welcome(self.firebase);
             welcome.listGames();
-
-            welcome.watchNewGame().then(function (size) {
-                var gameId = self.firebase.newGame(size);
-                window.location.replace('/#/' + gameId);
-            });
+            welcome.watchNewGame();
         }
     };
     var router = Router(routes);
     router.init('/');
+
+    this.watchForSignOut();
 };
 
 App.prototype.createGame = function (url, gameId) {
@@ -39,5 +37,31 @@ App.prototype.createGame = function (url, gameId) {
         console.debug('new Game [size : ', size, ', gameId : ', gameId, ']');
 
         new Game(self.firebase, url, gameId, size);
+    });
+};
+
+App.prototype.watchForSignOut = function () {
+    var self = this;
+    $('#sign-out').on("click", function () {
+        self.firebase.ref().unauth();
+    });
+
+    $(".welcome-login-btn").on("click", function () {
+        var provider = $(this).data("provider");
+        self.firebase.ref().authWithOAuthPopup(provider, function (error, authData) {
+            if (error) {
+                toastr.error('Login Failed! : <br>' + error.message);
+            }
+        }, {
+            scope: "email"
+        });
+    });
+
+    this.fb.ref().onAuth(function (authData) {
+        if (authData) {
+            self.$signOut.removeClass('is-hidden');
+        } else {
+            self.$signOut.addClass('is-hidden');
+        }
     });
 };
