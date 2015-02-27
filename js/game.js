@@ -81,7 +81,7 @@ Game.prototype.tryToJoin = function (playerNum) {
     this.fb.ref().child('games/' + self.gameId + '/players/' + playerNum + '/online').transaction(function (snap) {
         console.log("player " + playerNum + " tryToJoin transaction ", snap);
         if (snap === null) {
-            self.fb.setToken(playerNum);
+            self.fb.initToken(playerNum);
             return true; // Try to set online to true
         } else {
             return; // Somebody must have beat us.  Abort the transaction.

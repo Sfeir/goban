@@ -45,29 +45,31 @@ FB.prototype.removeStone = function (x, y, playerNum) {
     });
 };
 
-FB.prototype.setToken = function (playerNum) {
-    var partnerNum = Math.abs(playerNum - 1);
+FB.prototype.initToken = function (playerNum) {
     var self = this;
-    var player = this.gameId + '/players/' + playerNum + '/token';
-    var partner = this.gameId + 'players/' + partnerNum + '/token';
-    this.gamesRef.child(player).once('value', function (snap) {
-        self.gamesRef.child(partner).once('value', function (snapPartner) {
-            if (_.isNull(snap.val()) && _.isNull(snapPartner.val())) {
-                self.gamesRef.child(player).transaction(function () {
-                    return true;
-                });
-            }
-        });
+    var tokenPath = 'games/' + this.gameId + '/players/token';
+
+    this.once(tokenPath, 'value').then(function (snap) {
+        if (snap.val() === null) {
+            self.ref().child(tokenPath).transaction(function () {
+                return playerNum;
+            });
+        }
     });
 };
 
 FB.prototype.switchToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
-    var partner = this.gameId + '/players/' + partnerNum + '/token';
-    var player = this.gameId + '/players/' + playerNum + '/token';
-    this.gamesRef.child(player).set({});
-    this.gamesRef.child(partner).transaction(function () {
-        return true;
+    var self = this;
+    var tokenPath = 'games/' + this.gameId + '/players/token';
+
+    this.once(tokenPath, 'value').then(function (snap) {
+        if (snap.val() === null || snap.val() == playerNum) {
+
+            self.ref().child(tokenPath).transaction(function () {
+                return (snap.val() === null) ? playerNum : partnerNum;
+            });
+        }
     });
 };
 
