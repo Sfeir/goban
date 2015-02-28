@@ -9,16 +9,55 @@
     <!-- endbuild -->
 </head>
 <body>
-<div class="header-background"></div>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+                <div><img src="img/logo-sfeir.png" alt=""> Game of Go</div>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="#">Home</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a id="sign-out">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <div class="container">
-    <div class="header row text-center">
-        <h1><a href="/#"><img src="img/logo-sfeir.png" class="pull-left"></a> Goban</h1>
+    <div class="row">
+        <div class="text-center is-hidden" id="welcome-login">
+            <button class="welcome-login-btn btn-google-plus" data-provider="google">
+                Sign in with Google
+            </button>
+            <button class="welcome-login-btn btn-twitter" data-provider="twitter">
+                Sign in with Twitter
+            </button>
+        </div>
     </div>
-    <div id="container-value"></div>
+    <div class="row">
+        <div id="container-value"></div>
+    </div>
 </div>
 
 <script id="template-game" type="text/template">
+    <div class="row-fluid">
+        <div class="alert alert-info text-center" role="alert" id="game-alert-toplay">
+            <h4>To play, log in !</h4>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-8">
             <div class="panel panel-primary">
@@ -74,11 +113,11 @@
 
 <script id="template-create" type="text/template">
     <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-8">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Create new game</h3>
-                </div>
+
+        <div class="col-xs-12">
+            <div class="is-hidden" id="welcome-new-game">
+                <h2 class="panel-title">New Game</h2>
+
                 <div class="panel-body text-center">
                     <div class="go-game col-xs-12 col-sm-12 col-md-6 col-lg-4">
                         <button class="btn-reset welcome-game-size" data-size="9">
@@ -98,7 +137,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-4">
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Current game</h3>
@@ -115,7 +156,8 @@
 </script>
 <!-- build:js js/built.js -->
 <script src="./bower_components/jquery/dist/jquery.min.js"></script>
-<script src="./bower_components/director/build/director.min.js"></script>
+<script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="./bower_components/routie/dist/routie.min.js"></script>
 <script src="./bower_components/firebase/firebase.js"></script>
 <script src="./bower_components/lodash/lodash.min.js"></script>
 <script src="./bower_components/toastr/toastr.min.js"></script>
@@ -125,6 +167,7 @@
 <script src="./js/board.js"></script>
 <script src="./js/fireb.js"></script>
 <script src="./js/utils.js"></script>
+<script src="./js/oauth.js"></script>
 <!-- endbuild -->
 <script>
     $(function () {

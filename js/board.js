@@ -1,6 +1,6 @@
 var Board = function (firebase, size, gameId) {
     this.templateCreate = _.template($('#template-game').html());
-    this.firebase = firebase;
+    this.fb = firebase;
     this.size = parseInt(size);
     this.gameId = gameId;
     this.stones = [];
@@ -31,38 +31,48 @@ Board.prototype.setStone = function (x, y, color) {
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
     if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
 
-        var player = 'games/' + this.gameId + '/player' + playerNum + '/token';
         var self = this;
+        var token = 'games/' + this.gameId + '/players/token';
 
-        this.firebase.once(player, 'value').then(function (snap) {
-            if (!_.isNull(snap.val())) {
+        this.fb.once(token, 'value').then(function (snap) {
+            var value = snap.val();
+
+            if (!_.isNull(value) && _.isEqual(playerNum, value)) {
+                var oldValue = self.stones[x][y];
                 self.setClassName(x, y, color);
                 self.stones[x][y] = color;
 
-                self.firebase.setStone(x, y, color);
-                self.firebase.switchToken(playerNum);
+                self.fb.setStone(x, y, color).then(function () {
+                    self.fb.switchToken(playerNum);
+                }, function () {
+                    //delete self.stones[x][y];
+                    self.stones[x][y] = oldValue;
+                });
             } else {
-                toastr['error']('This is your opponent\'s turn ');
+                toastr.error('This is your opponent\'s turn ');
             }
         });
     }
 };
 
 Board.prototype.skipTurnFirebase = function (playerNum) {
-    if (!_.isNull(playerNum)) {
-        var player = 'player' + playerNum + '/token';
-        var self = this;
-
-        this.firebase.once(player, 'value').then(function () {
-            toastr['success']('You skip your turn');
-            self.firebase.switchToken(playerNum);
-        });
+    if (_.isNull(playerNum)) {
+        console.error('skipTurnFirebase(), playerNum is null');
+        return;
     }
+
+    var self = this;
+    this.fb.once('players/token', 'value').then(function (snap) {
+        if (_.isEqual(snap.val(), playerNum)) {
+            toastr.success('You skip your turn');
+            self.fb.switchToken(playerNum);
+        }
+    });
 };
 
 Board.prototype.removeStone = function (x, y, playerNum) {
     if (!this.isCoordOnGoban(x, y)) {
-        toastr['success']('Outside goban');
+        toastr.success('Outside goban');
         return false;
     }
 
@@ -72,7 +82,7 @@ Board.prototype.removeStone = function (x, y, playerNum) {
 
     this.removeClassName(x, y);
     if (_.isNumber(playerNum)) {
-        this.firebase.removeStone(x, y, playerNum);
+        this.fb.removeStone(x, y, playerNum);
     }
 };
 
@@ -86,12 +96,12 @@ Board.prototype.isColorValid = function (color) {
 
 Board.prototype.isOkSetStone = function (x, y, color) {
     if (!this.isCoordOnGoban(x, y) || !this.isColorValid(color)) {
-        toastr['error']('Outside goban or color invalid');
+        toastr.error('Outside goban or color invalid');
         return false;
     }
 
     if (this.stones[x][y] !== undefined && this.stones[x][y] !== color) {
-        toastr['error']('A stone already exists');
+        toastr.error('A stone already exists');
         return false;
     }
     return true;

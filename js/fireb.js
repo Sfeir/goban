@@ -1,11 +1,11 @@
 var FB = function (url, gameId) {
-    this.firebase = new Firebase(url);
-    this.gamesRef = this.firebase.root().child('games');
+    this.fb = new Firebase(url);
+    this.gamesRef = this.fb.root().child('games');
     this.gameId = gameId;
 };
 
 FB.prototype.ref = function () {
-    return this.firebase.root();
+    return this.fb.root();
 };
 
 FB.prototype.newGame = function (size) {
@@ -21,44 +21,55 @@ FB.prototype.getGames = function () {
 };
 
 FB.prototype.setStone = function (x, y, color) {
-    this.gamesRef.child(this.gameId + '/board/' + x + "-" + y).set(color);
-};
+    var gobanRef = this.gamesRef.child(this.gameId + '/goban/' + x + "-" + y);
 
-FB.prototype.removeStone = function (x, y, playerNum) {
-    var ref = this.gamesRef.child(this.gameId);
-    ref.child('/board/' + x + "-" + y).remove();
-
-    var path = '/player' + playerNum;
-    this.once('games/' + this.gameId + '/player' + playerNum + '/score', 'value').then(function (snap) {
-        var score = snap.val() === null ? 0 : snap.val();
-        console.log("score : ", score, "playernum", playerNum);
-        ref.child(path).update({score: score + 1});
-    });
-};
-
-FB.prototype.setToken = function (playerNum) {
-    var partnerNum = Math.abs(playerNum - 1);
-    var self = this;
-    var player = this.gameId + '/player' + playerNum + '/token';
-    var partner = this.gameId + 'player' + partnerNum + '/token';
-    this.gamesRef.child(player).once('value', function (snap) {
-        self.gamesRef.child(partner).once('value', function (snapPartner) {
-            if (_.isNull(snap.val()) && _.isNull(snapPartner.val())) {
-                self.gamesRef.child(player).transaction(function () {
-                    return true;
-                });
+    return $.Deferred(function (def) {
+        gobanRef.set(color, function (error) {
+            if (error) {
+                def.reject(error);
+            } else {
+                def.resolve(true);
             }
         });
     });
 };
 
+FB.prototype.removeStone = function (x, y, playerNum) {
+    var ref = this.gamesRef.child(this.gameId);
+    ref.child('/goban/' + x + "-" + y).remove();
+
+    var path = '/players/' + playerNum;
+    this.once('games/' + this.gameId + path + '/score', 'value').then(function (snap) {
+        var score = (snap.val() === null) ? 0 : snap.val();
+        ref.child(path).update({score: score + 1});
+    });
+};
+
+FB.prototype.initToken = function (playerNum) {
+    var self = this;
+    var tokenPath = 'games/' + this.gameId + '/players/token';
+
+    this.once(tokenPath, 'value').then(function (snap) {
+        if (snap.val() === null) {
+            self.ref().child(tokenPath).transaction(function () {
+                return playerNum;
+            });
+        }
+    });
+};
+
 FB.prototype.switchToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
-    var partner = this.gameId + '/player' + partnerNum + '/token';
-    var player = this.gameId + '/player' + playerNum + '/token';
-    this.gamesRef.child(player).set({});
-    this.gamesRef.child(partner).transaction(function () {
-        return true;
+    var self = this;
+    var tokenPath = 'games/' + this.gameId + '/players/token';
+
+    this.once(tokenPath, 'value').then(function (snap) {
+        if (snap.val() === null || snap.val() == playerNum) {
+
+            self.ref().child(tokenPath).transaction(function () {
+                return (snap.val() === null) ? playerNum : partnerNum;
+            });
+        }
     });
 };
 
