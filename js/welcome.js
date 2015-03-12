@@ -28,7 +28,7 @@ Welcome.prototype.init = function () {
 
 Welcome.prototype.listGames = function () {
     var self = this;
-    this.fb.getGames().then(function (games) {
+    this.fb.getGames().progress(function (games) {
         var html = [];
 
         games.forEach(function(game) {

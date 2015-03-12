@@ -14,9 +14,10 @@ FB.prototype.newGame = function (size) {
 
 FB.prototype.getGames = function () {
     var def = $.Deferred();
-    this.gamesRef.orderByKey().limitToLast(5).once('value', function (snap) {
-        def.resolve(snap);
+    this.gamesRef.limitToLast(5).on('value', function (snap) {
+        def.notify(snap);
     });
+
     return def.promise();
 };
 
