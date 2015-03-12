@@ -60,42 +60,18 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-7 col-md-8">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Game
-                        <span id="player-num"></span>
-                        <span id="presence" class="label label-info pull-right"></span>
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="goban">
-                        <div id="board" class="board">
-                            <div id="canvasGoban" class="canvas"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer text-right">
-                    <button class="btn btn-sm btn-link">Undo</button>
-                    <button id="skip" class="btn btn-sm btn-warning">Skip my turn</button>
-                </div>
-            </div>
+	        <div class="goban">
+		        <div id="board" class="board">
+			        <div id="canvasGoban" class="canvas"></div>
+		        </div>
+	        </div>
         </div>
         <div class="col-xs-12 col-sm-5 col-md-4">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Invite someone to play</h3>
-                </div>
-                <div class="panel-body">
-                    To invite someone to play, give him this link :<br>
-                    <span class="glyphicon glyphicon-link"></span> <a href="#" id="share-link"></a><br>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Game info</h3>
-                </div>
-                <table class="table">
+	            <div class="panel-heading">
+		            <h3 class="panel-title">Game info <span id="presence" class="label label-info pull-right"></span></h3>
+	            </div>
+	            <table class="table">
                     <tr>
                         <th>Turn :</th>
                         <td>Player A</td>
@@ -106,6 +82,17 @@
                     </tr>
                 </table>
             </div>
+	        Game <span id="player-num"></span>
+	        <button id="skip" class="btn btn-sm btn-warning">Skip my turn</button>
+	        <div class="panel panel-default">
+		        <div class="panel-heading">
+			        <h3 class="panel-title">Invite someone to play</h3>
+		        </div>
+		        <div class="panel-body">
+			        To invite someone to play, give him this link :<br>
+			        <span class="glyphicon glyphicon-link"></span> <a href="#" id="share-link"></a><br>
+		        </div>
+	        </div>
         </div>
     </div>
 </script>
