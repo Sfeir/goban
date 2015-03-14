@@ -134,6 +134,14 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
+    this.fb.once('games/' + this.gameId + '/goban', 'value').then(function (snaps) {
+        snaps.forEach(function(snap) {
+            var coord = snap.key().split("-");
+            var stone = snap.val();
+            self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
+        });
+    });
+
     this.fb.on('games/' + this.gameId + '/goban', 'child_added').progress(function (snap) {
         var coord = snap.key().split("-");
         var stone = snap.val();
