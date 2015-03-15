@@ -1,0 +1,188 @@
+@white: #fff;
+@black: #000;
+@orange: #dcb35b;
+
+.header {
+  margin-bottom: 30px;
+  color: @white;
+  line-height: 60px;
+
+  h1 {
+    margin-top: 8px;
+  }
+  img {
+    margin-top: 5px;
+  }
+}
+
+.navbar-brand img {
+  width: 80px;
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 800px
+  }
+
+  .navbar-collapse a {
+    font-size: 15px;
+    margin-top: 2px;
+  }
+}
+
+.btn-reset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+#welcome-new-game {
+  img {
+    height: 160px;
+  }
+}
+
+.goban {
+  text-align: center;
+  .board {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    position: relative;
+    cursor: pointer;
+    background: @orange;
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .canvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .stone {
+      &.black {
+        background-image: url("/img/240px-go_b.svg.png") !important;
+      }
+      &.white {
+        background-image: url("/img/240px-go_w.svg.png") !important;
+      }
+    }
+    .cell {
+      float: left;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      &.first_col {
+        clear: left;
+      }
+    }
+  }
+  .action a {
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+  #skip {
+    margin-top: 10px;
+    padding: 10px 60px;
+  }
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+  text-align: center;
+
+  -webkit-animation: rotate 2.0s infinite linear;
+  animation: rotate 2.0s infinite linear;
+
+  & > div {
+    width: 60%;
+    height: 60%;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    background-color: #333;
+    border-radius: 100%;
+
+    -webkit-animation: bounce 2.0s infinite ease-in-out;
+    animation: bounce 2.0s infinite ease-in-out;
+  }
+
+  & > div:last-child {
+    top: auto;
+    bottom: 0;
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+  }
+
+  @-webkit-keyframes rotate {
+    100% {
+      -webkit-transform: rotate(360deg)
+    }
+  }
+
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+      -webkit-transform: rotate(360deg)
+    }
+  }
+
+  @-webkit-keyframes bounce {
+    0%, 100% {
+      -webkit-transform: scale(0.0)
+    }
+    50% {
+      -webkit-transform: scale(1.0)
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: scale(0.0);
+      -webkit-transform: scale(0.0);
+    }
+    50% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+  }
+}
+.welcome-login-btn {
+  width: 200px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  margin: 10px 5px;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 10px;
+  font-family: 'trebuchet ms', verdana, arial, sans-serif;
+  color: @white;
+
+  &.btn-google-plus {
+    background-color: #dd4b39;
+  }
+
+  &.btn-twitter {
+    background-color: #00aced;
+  }
+
+  &.btn-facebook {
+    background-color: #3b5998;
+  }
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible {
+  display: block !important;
+}

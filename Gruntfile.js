@@ -71,7 +71,7 @@ module.exports = function (grunt) {
                     './dist/css/built.css': [
                         './bower_components/bootstrap/dist/css/bootstrap.min.css',
                         './bower_components/toastr/toastr.min.css',
-                        './css/goban.css'
+                        './css/main.css'
                     ]
                 }
             }
