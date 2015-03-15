@@ -1,4 +1,4 @@
-Game = function (firebase, url, gameId, size) {
+var Game = function (firebase, url, gameId, size) {
     this.fb = firebase;
     this.url = url;
     this.size = size;
@@ -109,7 +109,7 @@ Game.prototype.startPlaying = function (playerNum) {
     $("#player-num").text('- player ' + playerNum);
 
     var self = this;
-    $(".cell").click(function (event) {
+    $(".cell").on("click", function (event) {
         var ids = event.target.id.split("-"),
             x = ids[0],
             y = ids[1];
@@ -135,7 +135,7 @@ Game.prototype.watchForNewStones = function () {
     var self = this;
 
     this.fb.once('games/' + this.gameId + '/goban', 'value').then(function (snaps) {
-        snaps.forEach(function(snap) {
+        snaps.forEach(function (snap) {
             var coord = snap.key().split("-");
             var stone = snap.val();
             self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
