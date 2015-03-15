@@ -47,9 +47,19 @@ App.prototype.watchForSignOut = function () {
     $(".welcome-login-btn").on("click", function () {
         var provider = $(this).data("provider");
         self.fb.ref().authWithOAuthPopup(provider, function (error, authData) {
-            console.log(authData);
             if (error) {
                 toastr.error('Login Failed! : <br>' + error.message);
+            } else {
+                var user = dataOauthToJson(authData);
+                console.log(authData);
+                self.fb.ref().child("users/" + authData.uid).update(user, function(error) {
+                    if (error) {
+                        toastr.error('Synchronization failed! : <br>' + error.message);
+                        self.fb.ref().unauth();
+                    } else {
+                        toastr.success('Hi ' + user.name);
+                    }
+                });
             }
         }, {
             scope: "email"
