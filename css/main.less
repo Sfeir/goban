@@ -63,6 +63,7 @@
 
 .goban {
   text-align: center;
+  padding: 0;
   .board {
     width: 400px;
     height: 400px;
@@ -108,6 +109,48 @@
     padding: 10px 60px;
   }
 }
+
+
+.profile-photo {
+  position: relative;
+  margin: 0 auto;
+  width: 120px;
+  -webkit-border-radius: 500px;
+  -moz-border-radius: 500px;
+  border-radius: 500px;
+  border: 7px solid @white;
+  -webkit-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25);
+//  opacity: .3;
+  &.online {
+    box-shadow: 0 0 20px 0 green;
+  }
+  &.black {
+    border-color: @black;
+  }
+  &.turn {
+    opacity: 1;
+  }
+  &:after {
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+    border-radius: 500px;
+    -webkit-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.25) inset;
+    -moz-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.25) inset;
+    box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.25) inset;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  > img {
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+    border-radius: 500px;
+    width: 100%;
+  }
+}
+
 
 .spinner {
   margin: 100px auto;

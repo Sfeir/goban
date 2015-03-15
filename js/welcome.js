@@ -36,12 +36,12 @@ Welcome.prototype.listGames = function () {
             var child = game.val();
 
             var scorePlayer0 = 0;
-            if (_.has(child, 'players/1') && _.has(child.player1, 'score')) {
+            if (_.has(child, 'players/player1') && _.has(child.player1, 'score')) {
                 scorePlayer0 = child.player1.score;
             }
 
             var scorePlayer1 = 0;
-            if (_.has(child, 'players/0') && _.has(child.player0, 'score')) {
+            if (_.has(child, 'players/player0') && _.has(child.player0, 'score')) {
                 scorePlayer1 = child.player1.score;
             }
 

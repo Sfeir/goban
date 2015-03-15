@@ -50,7 +50,7 @@ App.prototype.watchForSignOut = function () {
             if (error) {
                 toastr.error('Login Failed! : <br>' + error.message);
             } else {
-                var user = dataOauthToJson(authData);
+                var user = Oauth.dataOauthToJson(authData);
                 console.log(authData);
                 self.fb.ref().child("users/" + authData.uid).update(user, function(error) {
                     if (error) {
