@@ -28,24 +28,33 @@ Welcome.prototype.init = function () {
 
 Welcome.prototype.listGames = function () {
     var self = this;
-    this.fb.getGames().then(function (games) {
+    this.fb.getGames().progress(function (games) {
         var html = [];
-        $.each(games, function (k, v) {
+
+        games.forEach(function(game) {
+            var key = game.key();
+            var child = game.val();
+
             var scorePlayer0 = 0;
-            if (_.has(v, 'players/1') && _.has(v.player1, 'score')) {
-                scorePlayer0 = v.player1.score;
+            if (_.has(child, 'players/player1') && _.has(child.player1, 'score')) {
+                scorePlayer0 = child.player1.score;
             }
 
             var scorePlayer1 = 0;
-            if (_.has(v, 'players/0') && _.has(v.player0, 'score')) {
-                scorePlayer1 = v.player1.score;
+            if (_.has(child, 'players/player0') && _.has(child.player0, 'score')) {
+                scorePlayer1 = child.player1.score;
             }
 
-            html.push('<a href="#/game/' + k + '" class="list-group-item">');
-            html.push('<h4 class="list-group-item-heading">Game : ' + k + '</h4>');
+            html.push('<a href="#/game/' + key + '" class="list-group-item">');
+            html.push('<h4 class="list-group-item-heading">Game : ' + key + '</h4>');
             html.push('<p class="list-group-item-text"><b>Score :</b> ' + scorePlayer0 + ' - ' + scorePlayer1 + '</p>');
             html.push('</a>');
         });
+
+        if (_.isEmpty(html)) {
+            html.push('<div class="text-center">No Game</div>');
+        }
+
         self.$listGame.html(html.join(''));
     });
 };

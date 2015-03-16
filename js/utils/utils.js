@@ -1,5 +1,4 @@
 var Utils = function () {
-
 };
 
 Utils.checkFirebaseId = function (id) {

@@ -1,4 +1,4 @@
-Game = function (firebase, url, gameId, size) {
+var Game = function (firebase, url, gameId, size) {
     this.fb = firebase;
     this.url = url;
     this.size = size;
@@ -29,6 +29,8 @@ Game.prototype.init = function () {
             $welcomeLogin.removeClass('is-hidden');
         }
     });
+
+    this.watchForNewStones();
 };
 
 Game.prototype.addShareLink = function () {
@@ -48,29 +50,31 @@ Game.prototype.getColor = function () {
 Game.prototype.waitToJoin = function () {
     var self = this;
 
-    // Listen on 'online' location for player0 and player1.
-    function join(playerNum) {
-        self.fb.on('games/' + self.gameId + '/players/' + playerNum + '/online', 'value').progress(function (snap) {
-            if (_.isNull(snap.val()) && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
-                console.log("waitToJoin", playerNum);
-                self.tryToJoin(playerNum);
-            }
-            self.presence(playerNum, snap.val());
-        });
-    }
+    var players = self.fb.ref('games/' + self.gameId + '/players/');
 
     this.fb.ref().onAuth(function (authData) {
-        if (authData) {
-            join(0);
-            join(1);
+        if (authData && _.isEqual(self.playingState, Game.PlayingState.Watching)) {
+            players.once('value', function (snap) {
+                var players = snap.val();
+
+                if (_.isNull(players) || !_.has(players, "player0") || _.isEqual(players.player0.uid, authData.uid)) {
+                    self.tryToJoin(0, authData.uid);
+                    return;
+                }
+
+                if (!_.has(players, "player1") || _.isEqual(players.player1.uid, authData.uid)) {
+                    self.tryToJoin(1, authData.uid);
+                }
+            });
+        } else {
+            self.watchForUser();
+            console.log(" waitToJoin watching");
         }
     });
-
-    this.watchForNewStones();
-    this.watchForNewScore();
 };
 
-Game.prototype.tryToJoin = function (playerNum) {
+Game.prototype.tryToJoin = function (playerNum, uid) {
+    console.log('tryToJoin start', playerNum, uid);
     this.playerNum = playerNum;
 
     // Set ourselves as joining to make sure we don't try to join as both players. :-)
@@ -78,38 +82,52 @@ Game.prototype.tryToJoin = function (playerNum) {
 
     // Use a transaction to make sure we don't conflict with other people trying to join.
     var self = this;
-    this.fb.ref().child('games/' + self.gameId + '/players/' + playerNum + '/online').transaction(function (snap) {
-        console.log("player " + playerNum + " tryToJoin transaction ", snap);
-        if (snap === null) {
-            self.fb.initToken(playerNum);
-            return true; // Try to set online to true
-        } else {
+    this.fb.ref('games/' + self.gameId + '/players/player' + playerNum + '/uid').transaction(function (snap) {
+
+        if (snap !== null) {
             return; // Somebody must have beat us.  Abort the transaction.
         }
-    }, function (error, committed) {
-        console.log("tryToJoin error ", committed);
-        if (committed) { // We got in!
-            self.playingState = Game.PlayingState.Playing;
-            self.startPlaying(playerNum);
+
+        self.playingState = Game.PlayingState.Playing;
+        self.startPlaying(playerNum, uid);
+
+        self.fb.initToken(playerNum);
+        return uid; // Try to set user with uid current
+
+    }, function (error, committed, snapshot) {
+        console.log("tryToJoin transaction error");
+        if (error) {
+            console.log('Transaction failed abnormally!', error);
+        } else if (!committed) {
+            console.log('We aborted the transaction (because value already exists).');
         } else {
-            self.playingState = Game.PlayingState.Watching;
+            console.log('Value added!');
         }
+        console.log("Value data: ", snapshot.val());
     });
 };
 
 /**
  * Once we've joined, enable controlling our player.
  */
-Game.prototype.startPlaying = function (playerNum) {
-    this.myPlayerRef = this.fb.ref().child('games/' + this.gameId + '/players/' + playerNum);
+Game.prototype.startPlaying = function (playerNum, uid) {
+    var playerRef = this.fb.ref('games/' + this.gameId + '/players/player' + playerNum + '/online');
+
+    playerRef.set(true, function (error) {
+        if (error) {
+            console.error('startPlaying online failed');
+        }
+    });
 
     // Clear our 'online' status when we disconnect so somebody else can join.
-    this.myPlayerRef.child('online').onDisconnect().remove();
+    playerRef.onDisconnect().remove();
+
+    this.watchForUser();
 
     $("#player-num").text('- player ' + playerNum);
 
     var self = this;
-    $(".cell").click(function (event) {
+    $(".cell").on("click", function (event) {
         var ids = event.target.id.split("-"),
             x = ids[0],
             y = ids[1];
@@ -134,6 +152,14 @@ Game.prototype.startPlaying = function (playerNum) {
 Game.prototype.watchForNewStones = function () {
     var self = this;
 
+    this.fb.once('games/' + this.gameId + '/goban', 'value').then(function (snaps) {
+        snaps.forEach(function (snap) {
+            var coord = snap.key().split("-");
+            var stone = snap.val();
+            self.board.setStone(parseInt(coord[0]), parseInt(coord[1]), stone);
+        });
+    });
+
     this.fb.on('games/' + this.gameId + '/goban', 'child_added').progress(function (snap) {
         var coord = snap.key().split("-");
         var stone = snap.val();
@@ -146,36 +172,55 @@ Game.prototype.watchForNewStones = function () {
     });
 };
 
-Game.prototype.watchForNewScore = function () {
-    this.fb.on('games/' + this.gameId + '/players/0/score', 'value').progress(function (snap) {
-        var score = snap.val();
-        if (!_.isNull(score)) {
-            $('#scorePlayer0').text(snap.val());
+Game.prototype.watchForUser = function () {
+    var self = this;
+    var player0Avatar = "", player1Avatar = "";
+    var players = this.fb.ref('games/' + this.gameId + '/players/');
+
+    // Listen location for player0 and player1.
+    players.child('player0').on('value', function (snap) {
+        var player = snap.val();
+        if (!_.isNull(player)) {
+            if (_.has(player, "score")) {
+                $('#scorePlayer0').text(player.score);
+            }
+            self.presence(0, player.online);
+
+            if (_.isEmpty(player0Avatar)) {
+                self.fb.ref('users/' + player.uid).once('value', function (snapUser) {
+                    if (!_.isNull(snapUser.val())) {
+                        $('#player0').find('img:first-child')[0].src = snapUser.val().picture;
+                    }
+                });
+            }
         }
     });
 
-    this.fb.on('games/' + this.gameId + '/players/1/score', 'value').progress(function (snap) {
-        var score = snap.val();
-        if (!_.isNull(score)) {
-            $('#scorePlayer1').text(snap.val());
+    players.child('player1').on('value', function (snap) {
+        var player = snap.val();
+        if (!_.isNull(player)) {
+            if (_.has(player, "score")) {
+                $('#scorePlayer1').text(player.score);
+            }
+            self.presence(1, player.online);
+
+            if (_.isEmpty(player1Avatar)) {
+                self.fb.ref('users/' + player.uid).once('value', function (snapUser) {
+                    if (!_.isNull(snapUser.val())) {
+                        $('#player1').find('img:first-child')[0].src = snapUser.val().picture;
+                    }
+                });
+            }
         }
     });
 };
 
-Game.prototype.presence = function (playerNum, user) {
-    if (_.isEqual(playerNum, this.playerNum)) {
-        return;
-    }
+Game.prototype.presence = function (playerNum, online) {
+    var $player = $("#player" + playerNum);
 
-    if (user) {
-        $("#presence")
-            .addClass('label-success')
-            .removeClass('label-info')
-            .text("★ partner online");
+    if (online) {
+        $player.addClass('online');
     } else {
-        $("#presence")
-            .addClass('label-info')
-            .removeClass('label-success')
-            .text("☆ partner idle");
+        $player.removeClass('online');
     }
 };

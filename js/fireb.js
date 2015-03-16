@@ -4,8 +4,12 @@ var FB = function (url, gameId) {
     this.gameId = gameId;
 };
 
-FB.prototype.ref = function () {
-    return this.fb.root();
+FB.prototype.ref = function (child) {
+    if (_.isUndefined(child)) {
+        return this.fb;
+    }
+
+    return this.fb.child(child);
 };
 
 FB.prototype.newGame = function (size) {
@@ -14,9 +18,10 @@ FB.prototype.newGame = function (size) {
 
 FB.prototype.getGames = function () {
     var def = $.Deferred();
-    this.gamesRef.orderByKey().limitToLast(5).once('value', function (snap) {
-        def.resolve(snap.val());
+    this.gamesRef.limitToLast(5).on('value', function (snap) {
+        def.notify(snap);
     });
+
     return def.promise();
 };
 
@@ -38,7 +43,7 @@ FB.prototype.removeStone = function (x, y, playerNum) {
     var ref = this.gamesRef.child(this.gameId);
     ref.child('/goban/' + x + "-" + y).remove();
 
-    var path = '/players/' + playerNum;
+    var path = '/players/player' + playerNum;
     this.once('games/' + this.gameId + path + '/score', 'value').then(function (snap) {
         var score = (snap.val() === null) ? 0 : snap.val();
         ref.child(path).update({score: score + 1});

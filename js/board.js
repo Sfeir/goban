@@ -66,6 +66,8 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
         if (_.isEqual(snap.val(), playerNum)) {
             toastr.success('You skip your turn');
             self.fb.switchToken(playerNum);
+        } else {
+            toastr.error('This is your opponent\'s turn ');
         }
     });
 };
