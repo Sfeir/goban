@@ -156,7 +156,12 @@ Game.prototype.startPlaying = function (playerNum, uid) {
             y = ids[1];
 
         var color = self.board.get(x, y);
-        if (color !== undefined && !_.isEqual(color, self.getColor())) {
+
+        if (color === undefined || _.isEqual(color, self.getColor())) {
+            return;
+        }
+
+        if (!_.isEqual(color, self.getColor())) {
             self.board.removeStone(x, y, playerNum);
             return;
         }
