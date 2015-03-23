@@ -64,7 +64,11 @@ Game.prototype.waitToJoin = function () {
 
                 if (!_.has(players, "player1") || _.isEqual(players.player1.uid, authData.uid)) {
                     self.tryToJoin(1, authData.uid);
+                    return;
                 }
+
+                self.watchForUser();
+                $('#skip').addClass('is-hidden');
             });
         } else {
             self.watchForUser();
