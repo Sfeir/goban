@@ -124,7 +124,26 @@ Game.prototype.startPlaying = function (playerNum, uid) {
 
     this.watchForUser();
 
-    $("#player-num").text('- player ' + playerNum);
+    var $board = $('#board');
+
+    if (playerNum === 0) {
+        $board.addClass('black');
+    } else if (playerNum === 1){
+        $board.addClass('white');
+    }
+
+    var $picPlayer0 = $('#player0');
+    var $picPlayer1 = $('#player1');
+    var tokenRef = this.fb.ref('games/' + this.gameId + '/players/token');
+    tokenRef.on('value', function (snap) {
+        if (snap.val() === 0) {
+            $picPlayer0.removeClass('waitForTurn');
+            $picPlayer1.addClass('waitForTurn');
+        } else {
+            $picPlayer0.addClass('waitForTurn');
+            $picPlayer1.removeClass('waitForTurn');
+        }
+    });
 
     var self = this;
     $(".cell").on("click", function (event) {

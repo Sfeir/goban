@@ -76,6 +76,14 @@
       display: table;
       clear: both;
     }
+    &.black .cell:hover{
+      opacity: 0.5;
+      background-image: url("/img/240px-go_b.svg.png") !important;
+    }
+    &.white .cell:hover{
+      opacity: 0.5;
+      background-image: url("/img/240px-go_w.svg.png") !important;
+    }
     .canvas {
       position: absolute;
       top: 0;
@@ -121,15 +129,14 @@
   border: 7px solid @white;
   -webkit-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25);
-//  opacity: .3;
   &.online {
     box-shadow: 0 0 20px 0 green;
   }
   &.black {
     border-color: @black;
   }
-  &.turn {
-    opacity: 1;
+  &.waitForTurn {
+    opacity: 0.3;
   }
   &:after {
     -webkit-border-radius: 500px;
