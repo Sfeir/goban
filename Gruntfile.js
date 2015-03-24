@@ -58,8 +58,8 @@ module.exports = function (grunt) {
                         './js/game.js',
                         './js/board.js',
                         './js/fireb.js',
-                        './js/utils.js',
-                        './js/oauth.js'
+                        './js/utils/utils.js',
+                        './js/utils/oauth.js'
                     ]
                 }
             }

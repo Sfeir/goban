@@ -64,7 +64,11 @@ Game.prototype.waitToJoin = function () {
 
                 if (!_.has(players, "player1") || _.isEqual(players.player1.uid, authData.uid)) {
                     self.tryToJoin(1, authData.uid);
+                    return;
                 }
+
+                self.watchForUser();
+                $('#skip').addClass('is-hidden');
             });
         } else {
             self.watchForUser();
@@ -88,10 +92,6 @@ Game.prototype.tryToJoin = function (playerNum, uid) {
             return; // Somebody must have beat us.  Abort the transaction.
         }
 
-        self.playingState = Game.PlayingState.Playing;
-        self.startPlaying(playerNum, uid);
-
-        self.fb.initToken(playerNum);
         return uid; // Try to set user with uid current
 
     }, function (error, committed, snapshot) {
@@ -101,6 +101,10 @@ Game.prototype.tryToJoin = function (playerNum, uid) {
         } else if (!committed) {
             console.log('We aborted the transaction (because value already exists).');
         } else {
+            self.playingState = Game.PlayingState.Playing;
+            self.startPlaying(playerNum, uid);
+
+            self.fb.initToken(playerNum);
             console.log('Value added!');
         }
         console.log("Value data: ", snapshot.val());
@@ -124,7 +128,26 @@ Game.prototype.startPlaying = function (playerNum, uid) {
 
     this.watchForUser();
 
-    $("#player-num").text('- player ' + playerNum);
+    var $board = $('#board');
+
+    if (playerNum === 0) {
+        $board.addClass('black');
+    } else if (playerNum === 1){
+        $board.addClass('white');
+    }
+
+    var $picPlayer0 = $('#player0');
+    var $picPlayer1 = $('#player1');
+    var tokenRef = this.fb.ref('games/' + this.gameId + '/players/token');
+    tokenRef.on('value', function (snap) {
+        if (snap.val() === 0) {
+            $picPlayer0.removeClass('waitForTurn');
+            $picPlayer1.addClass('waitForTurn');
+        } else {
+            $picPlayer0.addClass('waitForTurn');
+            $picPlayer1.removeClass('waitForTurn');
+        }
+    });
 
     var self = this;
     $(".cell").on("click", function (event) {
@@ -133,7 +156,12 @@ Game.prototype.startPlaying = function (playerNum, uid) {
             y = ids[1];
 
         var color = self.board.get(x, y);
-        if (color !== undefined && !_.isEqual(color, self.getColor())) {
+
+        if (color === undefined || _.isEqual(color, self.getColor())) {
+            return;
+        }
+
+        if (!_.isEqual(color, self.getColor())) {
             self.board.removeStone(x, y, playerNum);
             return;
         }
