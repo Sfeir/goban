@@ -44,37 +44,33 @@ FB.prototype.removeStone = function (x, y, playerNum) {
     ref.child('/goban/' + x + "-" + y).remove();
 
     var path = '/players/player' + playerNum;
-    this.once('games/' + this.gameId + path + '/score', 'value').then(function (snap) {
+    this.fb.child('games/' + this.gameId + path + '/score').once('value', function (snap) {
         var score = (snap.val() === null) ? 0 : snap.val();
         ref.child(path).update({score: score + 1});
     });
 };
 
 FB.prototype.initToken = function (playerNum) {
-    var self = this;
-    var tokenPath = 'games/' + this.gameId + '/players/token';
-
-    this.once(tokenPath, 'value').then(function (snap) {
-        if (snap.val() === null) {
-            self.ref().child(tokenPath).transaction(function () {
-                return playerNum;
-            });
+    var path = 'games/' + this.gameId + '/players/token';
+    this.fb.child(path).transaction(function (value) {
+        if (value !== null) {
+            return;
         }
+
+        return playerNum;
     });
 };
 
 FB.prototype.switchToken = function (playerNum) {
     var partnerNum = Math.abs(playerNum - 1);
-    var self = this;
     var tokenPath = 'games/' + this.gameId + '/players/token';
 
-    this.once(tokenPath, 'value').then(function (snap) {
-        if (snap.val() === null || snap.val() == playerNum) {
-
-            self.ref().child(tokenPath).transaction(function () {
-                return (snap.val() === null) ? playerNum : partnerNum;
-            });
+    this.fb.child(tokenPath).transaction(function (value) {
+        if (value !== null && value !== playerNum) {
+            return;
         }
+
+        return (value === null) ? playerNum : partnerNum;
     });
 };
 
@@ -95,7 +91,7 @@ FB.prototype.switchToken = function (playerNum) {
 FB.prototype.on = function (path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).on(event, function (snap) {
+    this.fb.child(path).on(event, function (snap) {
         def.notify(snap);
     }, function (err) {
         console.error('Access denied attempting to read database ', err, path, event);
@@ -114,7 +110,7 @@ FB.prototype.on = function (path, event) {
 FB.prototype.once = function (path, event) {
     var def = $.Deferred();
 
-    this.ref().child(path).once(event, function (snap) {
+    this.fb.child(path).once(event, function (snap) {
         def.resolve(snap);
     }, function (err) {
         console.error('Access denied attempting to read database', err, path, event);
@@ -126,13 +122,14 @@ FB.prototype.once = function (path, event) {
 
 FB.prototype.childWithTransaction = function (path, input) {
     var def = $.Deferred();
-    this.ref().child(path).transaction(function (value) {
+    this.fb.child(path).transaction(function (value) {
         def.resolve(value);
-        if (value === null) {
-            return input;
-        } else {
+        if (value !== null) {
             return;
         }
+
+        return input;
+
     }, function (error, committed) {
         def.reject(error, committed);
     });
