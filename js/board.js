@@ -62,7 +62,8 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     }
 
     var self = this;
-    this.fb.once('players/token', 'value').then(function (snap) {
+    var path = 'games/' + this.gameId + '/players/token';
+    this.fb.once(path, 'value').then(function (snap) {
         if (_.isEqual(snap.val(), playerNum)) {
             toastr.success('You skip your turn');
             self.fb.switchToken(playerNum);
