@@ -1,29 +1,51 @@
 {
-    "rules":{
-        ".read":true,
-        ".write":true,
-        "game":{
-            "$gameId":{
-                "size":{
-                    ".validate":"newData.isNumber() && !data.exists()"
-                },
-                "player0":{
-                    "online":{
-                        ".validate":"newData.isBoolean()"
-                    },
-                    "token":{
-                        ".validate":"newData.isBoolean()"
-                    }
-                },
-                "player1":{
-                    "online":{
-                        ".validate":"newData.isBoolean()"
-                    },
-                    "token":{
-                        ".validate":"newData.isBoolean()"
-                    }
-                }
+  "rules":{
+    ".read": true,
+    ".write": "auth != null",
+    "games":{
+      "$gameId":{
+        ".write": "auth.uid == true",
+        "goban": {
+          ".write": "newData.parent().child('players/player0/uid').val() == auth.uid || newData.parent().child('players/player1/uid').val() == auth.uid",
+          ".validate": "true"
+        },
+        "size":{
+          ".validate":"newData.isNumber() && !data.exists()"
+        },
+        "players": {
+          "token":{
+            ".validate":"newData.isNumber()"
+          },
+          "player0":{
+            "uid": {
+              ".write": "data.val() == null"
+            },
+            "online":{
+              ".validate":"newData.isBoolean()"
+            },
+            "scrore": {
+              ".validate":"newData.isNumber() && (!newData.exists() || (newData.val() >= data.val()))"
             }
+          },
+          "player1":{
+            "uid": {
+              ".write": "data.val() == null"
+            },
+            "online":{
+              ".validate":"newData.isBoolean()"
+            },
+            "scrore": {
+              ".validate":"newData.isNumber() && (!newData.exists() || (newData.val() >= data.val()))"
+            }
+          }
         }
+      }
+    },
+    "users":{
+      "$userId": {
+        ".write": "auth.uid === $userId",
+        ".validate": "newData.hasChildren(['last_login_at', 'name', 'picture'])"
+      }
     }
+  }
 }
