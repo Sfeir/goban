@@ -22,14 +22,14 @@ Board.prototype.get = function (x, y) {
 };
 
 Board.prototype.setStone = function (x, y, color) {
-    if (this.isOkSetStone(x, y, color)) {
+    if (this.checkValueStone(x, y, color)) {
         this.setClassName(x, y, color);
         this.stones[x][y] = color;
     }
 };
 
 Board.prototype.setStoneFirebase = function (x, y, color, playerNum) {
-    if (this.isOkSetStone(x, y, color) && !_.isNull(playerNum)) {
+    if (this.checkValueStone(x, y, color) && !_.isNull(playerNum)) {
 
         var self = this;
         var token = 'games/' + this.gameId + '/players/token';
@@ -62,7 +62,8 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
     }
 
     var self = this;
-    this.fb.once('players/token', 'value').then(function (snap) {
+    var path = 'games/' + this.gameId + '/players/token';
+    this.fb.once(path, 'value').then(function (snap) {
         if (_.isEqual(snap.val(), playerNum)) {
             toastr.success('You skip your turn');
             self.fb.switchToken(playerNum);
@@ -73,7 +74,7 @@ Board.prototype.skipTurnFirebase = function (playerNum) {
 };
 
 Board.prototype.removeStone = function (x, y, playerNum) {
-    if (!this.isCoordOnGoban(x, y)) {
+    if (!this.checkCoord(x, y)) {
         toastr.success('Outside goban');
         return false;
     }
@@ -88,7 +89,7 @@ Board.prototype.removeStone = function (x, y, playerNum) {
     }
 };
 
-Board.prototype.isCoordOnGoban = function (x, y) {
+Board.prototype.checkCoord = function (x, y) {
     return 0 < x && x <= this.size && 0 < y && y <= this.size;
 };
 
@@ -96,8 +97,8 @@ Board.prototype.isColorValid = function (color) {
     return (_.isEqual(color, Game.color.BLACK) || _.isEqual(color, Game.color.WHITE));
 };
 
-Board.prototype.isOkSetStone = function (x, y, color) {
-    if (!this.isCoordOnGoban(x, y) || !this.isColorValid(color)) {
+Board.prototype.checkValueStone = function (x, y, color) {
+    if (!this.checkCoord(x, y) || !this.isColorValid(color)) {
         toastr.error('Outside goban or color invalid');
         return false;
     }

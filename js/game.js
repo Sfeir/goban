@@ -96,18 +96,18 @@ Game.prototype.tryToJoin = function (playerNum, uid) {
 
     }, function (error, committed, snapshot) {
         console.log("tryToJoin transaction error");
+
         if (error) {
-            console.log('Transaction failed abnormally!', error);
-        } else if (!committed) {
-            console.log('We aborted the transaction (because value already exists).');
-        } else {
+            console.error('Transaction failed abnormally!', error);
+            return;
+        }
+
+        if (snapshot.val() !== null && _.isEqual(uid, snapshot.val())) {
             self.playingState = Game.PlayingState.Playing;
             self.startPlaying(playerNum, uid);
 
             self.fb.initToken(playerNum);
-            console.log('Value added!');
         }
-        console.log("Value data: ", snapshot.val());
     });
 };
 
@@ -157,11 +157,11 @@ Game.prototype.startPlaying = function (playerNum, uid) {
 
         var color = self.board.get(x, y);
 
-        if (color === undefined || _.isEqual(color, self.getColor())) {
+        if (_.isEqual(color, self.getColor())) {
             return;
         }
 
-        if (!_.isEqual(color, self.getColor())) {
+        if (color !== undefined && !_.isEqual(color, self.getColor())) {
             self.board.removeStone(x, y, playerNum);
             return;
         }
